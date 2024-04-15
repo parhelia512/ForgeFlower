@@ -6,10 +6,10 @@ Subject: [PATCH] Add support for destination to be a zip file if there is only
 
 
 diff --git a/src/org/jetbrains/java/decompiler/main/decompiler/ConsoleDecompiler.java b/src/org/jetbrains/java/decompiler/main/decompiler/ConsoleDecompiler.java
-index c5398222893b170023afa13fa5b6c773ab3edc8d..b44bf391a4914dcee3228cfbb3bbdfefec2f3527 100644
+index ab6ac3b75db9877fb9cfa5e5f910fd5c01b5c9a6..3261ca70b9045a41b6ce9251f599aedc6dbdb0b4 100644
 --- a/src/org/jetbrains/java/decompiler/main/decompiler/ConsoleDecompiler.java
 +++ b/src/org/jetbrains/java/decompiler/main/decompiler/ConsoleDecompiler.java
-@@ -100,7 +100,7 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
+@@ -101,7 +101,7 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
      }
  
      File destination = new File(args[args.length - 1]);
@@ -18,15 +18,15 @@ index c5398222893b170023afa13fa5b6c773ab3edc8d..b44bf391a4914dcee3228cfbb3bbdfef
        System.out.println("error: destination '" + destination + "' is not a directory");
        return;
      }
-@@ -140,7 +140,7 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
+@@ -141,7 +141,7 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
  
-   protected ConsoleDecompiler(File destination, Map<String, Object> options, IFernflowerLogger logger) {
+   public ConsoleDecompiler(File destination, Map<String, Object> options, IFernflowerLogger logger) {
      root = destination;
 -    engine = new Fernflower(this, this, options, logger);
 +    engine = new Fernflower(this, root.isDirectory() ? this : new SingleFileSaver(destination), options, logger);
    }
  
-   public void addSource(File source) {
+   public ConsoleDecompiler(File destination, Map<String, Object> options, IFernflowerLogger logger, CancellationManager cancellationManager) {
 diff --git a/src/org/jetbrains/java/decompiler/main/decompiler/SingleFileSaver.java b/src/org/jetbrains/java/decompiler/main/decompiler/SingleFileSaver.java
 new file mode 100644
 index 0000000000000000000000000000000000000000..651584c6758413e31edd5ee6952cb069246c10d4

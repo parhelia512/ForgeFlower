@@ -5,18 +5,17 @@ Subject: [PATCH] Fix compound assignments
 
 
 diff --git a/src/org/jetbrains/java/decompiler/main/rels/MethodProcessorRunnable.java b/src/org/jetbrains/java/decompiler/main/rels/MethodProcessorRunnable.java
-index 74532a087d53613065490b1bd3bf545719e4b3e7..f66e835ab7cd7b03ada0a433b1edf357f5d6efcd 100644
+index 573de4aada98d7dca57902b9b57da29abfd11826..702411fc011cff277c77d41b64ff47c1bc46843a 100644
 --- a/src/org/jetbrains/java/decompiler/main/rels/MethodProcessorRunnable.java
 +++ b/src/org/jetbrains/java/decompiler/main/rels/MethodProcessorRunnable.java
-@@ -228,6 +228,8 @@ public class MethodProcessorRunnable implements Runnable {
- 
+@@ -242,6 +242,7 @@ public class MethodProcessorRunnable implements Runnable {
      varProc.setVarDefinitions(root);
  
+     cancellationManager.checkCanceled();
 +    SecondaryFunctionsHelper.updateAssignments(root);
-+
+ 
      // must be the last invocation, because it makes the statement structure inconsistent
      // FIXME: new edge type needed
-     LabelHelper.replaceContinueWithBreak(root);
 diff --git a/src/org/jetbrains/java/decompiler/modules/decompiler/SecondaryFunctionsHelper.java b/src/org/jetbrains/java/decompiler/modules/decompiler/SecondaryFunctionsHelper.java
 index 4a1ad182cf4a3ac6ba57f498f87a9c3486b6f08c..5f53e116b874efa1053fdb94bb3b513b9647597b 100644
 --- a/src/org/jetbrains/java/decompiler/modules/decompiler/SecondaryFunctionsHelper.java
@@ -69,13 +68,16 @@ index 4a1ad182cf4a3ac6ba57f498f87a9c3486b6f08c..5f53e116b874efa1053fdb94bb3b513b
 +  }
  }
 diff --git a/test/org/jetbrains/java/decompiler/SingleClassesTest.java b/test/org/jetbrains/java/decompiler/SingleClassesTest.java
-index c78c9554df9788b87028bcf181fc243db7a29f3f..58400b28b85b170d589655eae8355b5b11b4e722 100644
+index 6cac19407f3c70d240d533ca2115a90fd5e83295..2e3a16103f89b36fad89912eb485106794dc04e7 100644
 --- a/test/org/jetbrains/java/decompiler/SingleClassesTest.java
 +++ b/test/org/jetbrains/java/decompiler/SingleClassesTest.java
-@@ -213,4 +213,5 @@ public class SingleClassesTest extends SingleClassesTestBase {
+@@ -231,7 +231,6 @@ public class SingleClassesTest extends SingleClassesTestBase {
  
    @Test(expected = ClassFormatException.class)
    public void testUnsupportedConstantPoolEntry() { doTest("java11/TestUnsupportedConstantPoolEntry"); }
+-
+   @Test public void testSwitchOnStatic() { doTest("pkg/SwitchOnStatic"); }
+-
 +  @Test public void testCompoundAssignment() { doTest("pkg/TestCompoundAssignment"); }
  }
 diff --git a/testData/classes/pkg/TestCompoundAssignment.class b/testData/classes/pkg/TestCompoundAssignment.class

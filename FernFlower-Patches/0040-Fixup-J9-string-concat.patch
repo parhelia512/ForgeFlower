@@ -5,12 +5,12 @@ Subject: [PATCH] Fixup J9 string concat
 
 
 diff --git a/src/org/jetbrains/java/decompiler/main/rels/MethodProcessorRunnable.java b/src/org/jetbrains/java/decompiler/main/rels/MethodProcessorRunnable.java
-index 9ae846d540337db99dc054ec1a43271e2d41ab7d..74532a087d53613065490b1bd3bf545719e4b3e7 100644
+index fe439587f4cf3e0956a5d1d232bc0945bce220bd..573de4aada98d7dca57902b9b57da29abfd11826 100644
 --- a/src/org/jetbrains/java/decompiler/main/rels/MethodProcessorRunnable.java
 +++ b/src/org/jetbrains/java/decompiler/main/rels/MethodProcessorRunnable.java
-@@ -161,6 +161,10 @@ public class MethodProcessorRunnable implements Runnable {
-     }
-     while (new PPandMMHelper(varProc).findPPandMM(root));
+@@ -173,6 +173,10 @@ public class MethodProcessorRunnable implements Runnable {
+ 
+     cancellationManager.checkCanceled();
  
 +    if (cl.isVersion(CodeConstants.BYTECODE_JAVA_9)) {
 +      ConcatenationHelper.simplifyStringConcat(root);
@@ -97,11 +97,11 @@ index 5d47c847133cf0413365eddd5f1a2104b2f6ac6b..2aa9f91fc062ba76939d915428e84f61
                }
  
 diff --git a/src/org/jetbrains/java/decompiler/struct/StructClass.java b/src/org/jetbrains/java/decompiler/struct/StructClass.java
-index 969d6feb0133be481210b4e24a3db72637d0ccdd..17a1f62355d26d2142fa9957064ecf5a92774a3f 100644
+index 17c115ea09b4d4fa78d1c0a224c01f9492ae68c3..e1bd7c7c317d161763c92da7e8a12c1faa95f729 100644
 --- a/src/org/jetbrains/java/decompiler/struct/StructClass.java
 +++ b/src/org/jetbrains/java/decompiler/struct/StructClass.java
-@@ -286,6 +286,10 @@ public class StructClass extends StructMember {
-     return isVersion16() || (isVersion14() && isPreviewVersion());
+@@ -298,6 +298,10 @@ public class StructClass extends StructMember {
+     return isVersion21();
    }
  
 +  public boolean isVersion(int minVersion) {

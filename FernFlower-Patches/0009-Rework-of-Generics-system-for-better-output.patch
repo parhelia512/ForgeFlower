@@ -34,10 +34,10 @@ index 4c4916e4cc5ccdd06dd4138dae54c31fb7f3bd34..decfe747ba2ab3643209987294ef7bcb
 \ No newline at end of file
 +}
 diff --git a/src/org/jetbrains/java/decompiler/main/ClassWriter.java b/src/org/jetbrains/java/decompiler/main/ClassWriter.java
-index 9b4e9fb3ab0a2f54c124c8a4c3943e6d7a5d01d2..31236841f1b4bf4f452f30d6b95f21fcc99ec5b9 100644
+index 7d720fa950766b308acb6b5cfe72a540eb8dd8da..a15f1f8e0c4f8e34ddc6450844e450157791e06d 100644
 --- a/src/org/jetbrains/java/decompiler/main/ClassWriter.java
 +++ b/src/org/jetbrains/java/decompiler/main/ClassWriter.java
-@@ -371,9 +371,14 @@ public class ClassWriter {
+@@ -372,9 +372,14 @@ public class ClassWriter {
  
      List<TypeAnnotation> typeAnnotations = TypeAnnotation.listFrom(cl);
  
@@ -54,7 +54,7 @@ index 9b4e9fb3ab0a2f54c124c8a4c3943e6d7a5d01d2..31236841f1b4bf4f452f30d6b95f21fc
      }
  
      if (components != null) {
-@@ -396,15 +401,7 @@ public class ClassWriter {
+@@ -397,15 +402,7 @@ public class ClassWriter {
        List<TypeAnnotation> extendsTypeAnnotations = TargetInfo.SupertypeTarget.extractExtends(typeAnnotations);
        if (!VarType.VARTYPE_OBJECT.equals(supertype)) {
          buffer.append("extends ");
@@ -71,7 +71,7 @@ index 9b4e9fb3ab0a2f54c124c8a4c3943e6d7a5d01d2..31236841f1b4bf4f452f30d6b95f21fc
          buffer.append(' ');
        }
      }
-@@ -418,18 +415,7 @@ public class ClassWriter {
+@@ -419,18 +416,7 @@ public class ClassWriter {
              buffer.append(", ");
            }
            List<TypeAnnotation> superTypeAnnotations = TargetInfo.SupertypeTarget.extract(typeAnnotations, i);
@@ -91,7 +91,7 @@ index 9b4e9fb3ab0a2f54c124c8a4c3943e6d7a5d01d2..31236841f1b4bf4f452f30d6b95f21fc
          }
          buffer.append(' ');
        }
-@@ -491,12 +477,7 @@ public class ClassWriter {
+@@ -492,12 +478,7 @@ public class ClassWriter {
      final List<TypeAnnotation> typeAnnotations = TypeAnnotation.listFrom(fd);
  
      if (!isEnum) {
@@ -105,7 +105,7 @@ index 9b4e9fb3ab0a2f54c124c8a4c3943e6d7a5d01d2..31236841f1b4bf4f452f30d6b95f21fc
        buffer.append(' ');
      }
  
-@@ -524,8 +505,8 @@ public class ClassWriter {
+@@ -525,8 +506,8 @@ public class ClassWriter {
            ((ConstExprent) initializer).adjustConstType(fieldType);
          }
  
@@ -116,7 +116,7 @@ index 9b4e9fb3ab0a2f54c124c8a4c3943e6d7a5d01d2..31236841f1b4bf4f452f30d6b95f21fc
        }
      }
      else if (fd.hasModifier(CodeConstants.ACC_FINAL) && fd.hasModifier(CodeConstants.ACC_STATIC)) {
-@@ -638,7 +619,7 @@ public class ClassWriter {
+@@ -642,7 +623,7 @@ public class ClassWriter {
        boolean isDeprecated = mt.hasAttribute(StructGeneralAttribute.ATTRIBUTE_DEPRECATED);
        boolean clInit = false, dInit = false;
  
@@ -125,7 +125,7 @@ index 9b4e9fb3ab0a2f54c124c8a4c3943e6d7a5d01d2..31236841f1b4bf4f452f30d6b95f21fc
  
        int flags = mt.getAccessFlags();
        if ((flags & CodeConstants.ACC_NATIVE) != 0) {
-@@ -666,25 +647,7 @@ public class ClassWriter {
+@@ -670,25 +651,7 @@ public class ClassWriter {
          appendComment(buffer, "bridge method", indent);
        }
  
@@ -152,7 +152,7 @@ index 9b4e9fb3ab0a2f54c124c8a4c3943e6d7a5d01d2..31236841f1b4bf4f452f30d6b95f21fc
        appendAnnotations(buffer, indent, mt);
  
        buffer.appendIndent(indent);
-@@ -726,12 +689,7 @@ public class ClassWriter {
+@@ -730,12 +693,7 @@ public class ClassWriter {
          if (init) {
            emptyTypeAnnotations.forEach(typeAnnotation -> typeAnnotation.writeTo(buffer));
          } else {
@@ -166,7 +166,7 @@ index 9b4e9fb3ab0a2f54c124c8a4c3943e6d7a5d01d2..31236841f1b4bf4f452f30d6b95f21fc
            buffer.append(' ');
          }
  
-@@ -748,7 +706,12 @@ public class ClassWriter {
+@@ -752,7 +710,12 @@ public class ClassWriter {
          }
  
          int index = methodWrapper.varproc.getFirstParameterVarIndex();
@@ -179,7 +179,7 @@ index 9b4e9fb3ab0a2f54c124c8a4c3943e6d7a5d01d2..31236841f1b4bf4f452f30d6b95f21fc
            if (mask == null || mask.get(i) == null) {
              if (paramCount > 0) {
                buffer.append(", ");
-@@ -765,23 +728,12 @@ public class ClassWriter {
+@@ -769,23 +732,12 @@ public class ClassWriter {
              }
  
              String typeName;
@@ -207,7 +207,7 @@ index 9b4e9fb3ab0a2f54c124c8a4c3943e6d7a5d01d2..31236841f1b4bf4f452f30d6b95f21fc
  
              if (ExprProcessor.UNDEFINED_TYPE_STRING.equals(typeName) &&
                  DecompilerContext.getOption(IFernflowerPreferences.UNDEFINED_PARAM_TYPE_OBJECT)) {
-@@ -800,7 +752,7 @@ public class ClassWriter {
+@@ -804,7 +756,7 @@ public class ClassWriter {
              paramCount++;
            }
  
@@ -216,7 +216,7 @@ index 9b4e9fb3ab0a2f54c124c8a4c3943e6d7a5d01d2..31236841f1b4bf4f452f30d6b95f21fc
          }
  
          buffer.append(')');
-@@ -810,19 +762,14 @@ public class ClassWriter {
+@@ -814,19 +766,14 @@ public class ClassWriter {
            throwsExceptions = true;
            buffer.append(" throws ");
  
@@ -239,7 +239,7 @@ index 9b4e9fb3ab0a2f54c124c8a4c3943e6d7a5d01d2..31236841f1b4bf4f452f30d6b95f21fc
            }
          }
        }
-@@ -1050,7 +997,7 @@ public class ClassWriter {
+@@ -1054,7 +1001,7 @@ public class ClassWriter {
  
      final List<TypeAnnotation> typeAnnotations = TypeAnnotation.listFrom(cd);
      if (descriptor != null) {
@@ -248,7 +248,7 @@ index 9b4e9fb3ab0a2f54c124c8a4c3943e6d7a5d01d2..31236841f1b4bf4f452f30d6b95f21fc
          varArgComponent ? descriptor.type.decreaseArrayDim() : descriptor.type,
          TypeAnnotationWriteHelper.create(typeAnnotations)
        ));
-@@ -1104,14 +1051,7 @@ public class ClassWriter {
+@@ -1108,14 +1055,7 @@ public class ClassWriter {
    private static Map.Entry<VarType, GenericFieldDescriptor> getFieldTypeData(StructField fd) {
      VarType fieldType = new VarType(fd.getDescriptor(), false);
  
@@ -264,7 +264,7 @@ index 9b4e9fb3ab0a2f54c124c8a4c3943e6d7a5d01d2..31236841f1b4bf4f452f30d6b95f21fc
      return new AbstractMap.SimpleImmutableEntry<>(fieldType, descriptor);
    }
  
-@@ -1248,22 +1188,11 @@ public class ClassWriter {
+@@ -1252,22 +1192,11 @@ public class ClassWriter {
      }
    }
  
@@ -291,7 +291,7 @@ index 9b4e9fb3ab0a2f54c124c8a4c3943e6d7a5d01d2..31236841f1b4bf4f452f30d6b95f21fc
      buffer.append('<');
      for (int i = 0; i < parameters.size(); i++) {
        if (i > 0) {
-@@ -1271,15 +1200,15 @@ public class ClassWriter {
+@@ -1275,15 +1204,15 @@ public class ClassWriter {
        }
        TargetInfo.TypeParameterTarget.extract(typeAnnotations, i).forEach(typeAnnotation -> typeAnnotation.writeTo(buffer));
        buffer.append(parameters.get(i));
@@ -310,7 +310,7 @@ index 9b4e9fb3ab0a2f54c124c8a4c3943e6d7a5d01d2..31236841f1b4bf4f452f30d6b95f21fc
          }
        }
      }
-@@ -1296,4 +1225,4 @@ public class ClassWriter {
+@@ -1300,4 +1229,4 @@ public class ClassWriter {
        }
      }
    }
@@ -318,19 +318,19 @@ index 9b4e9fb3ab0a2f54c124c8a4c3943e6d7a5d01d2..31236841f1b4bf4f452f30d6b95f21fc
 \ No newline at end of file
 +}
 diff --git a/src/org/jetbrains/java/decompiler/main/DecompilerContext.java b/src/org/jetbrains/java/decompiler/main/DecompilerContext.java
-index e2936358fa03746e00e23d30f47351c28124e09f..654d0ddf34821ce4ea800cd5421f6268e2ca3236 100644
+index a1c3fd00ba52fe952f6e4fdecff3533d83f43df4..e71edd78b1de87bc40e882d775b401be724dff09 100644
 --- a/src/org/jetbrains/java/decompiler/main/DecompilerContext.java
 +++ b/src/org/jetbrains/java/decompiler/main/DecompilerContext.java
-@@ -18,6 +18,8 @@ public class DecompilerContext {
+@@ -20,6 +20,8 @@ public class DecompilerContext {
    public static final String CURRENT_CLASS_WRAPPER = "CURRENT_CLASS_WRAPPER";
    public static final String CURRENT_CLASS_NODE = "CURRENT_CLASS_NODE";
    public static final String CURRENT_METHOD_WRAPPER = "CURRENT_METHOD_WRAPPER";
 +  public static final String CURRENT_VAR_PROCESSOR = "CURRENT_VAR_PROCESSOR";
 +  public static final String IN_CLASS_TYPE_PARAMS = "IN_CLASS_TYPE_PARAMS";
  
+   @NotNull
    private final Map<String, Object> properties;
-   private final IFernflowerLogger logger;
-@@ -126,4 +128,4 @@ public class DecompilerContext {
+@@ -154,4 +156,4 @@ public class DecompilerContext {
    public static BytecodeSourceMapper getBytecodeSourceMapper() {
      return getCurrentContext().bytecodeSourceMapper;
    }
@@ -338,10 +338,10 @@ index e2936358fa03746e00e23d30f47351c28124e09f..654d0ddf34821ce4ea800cd5421f6268
 \ No newline at end of file
 +}
 diff --git a/src/org/jetbrains/java/decompiler/main/Fernflower.java b/src/org/jetbrains/java/decompiler/main/Fernflower.java
-index 692c1b622ef7e065c9c970cf0a5289f9ca8869f5..f8c413c7b7302b201a739310677d0103e2878d3e 100644
+index f3769b1f59a156f6a8cfa761b3349a7512c76cd7..2131734731949423555136fe2c23657dcbb74b4e 100644
 --- a/src/org/jetbrains/java/decompiler/main/Fernflower.java
 +++ b/src/org/jetbrains/java/decompiler/main/Fernflower.java
-@@ -11,6 +11,7 @@ import org.jetbrains.java.decompiler.struct.StructClass;
+@@ -12,6 +12,7 @@ import org.jetbrains.java.decompiler.struct.StructClass;
  import org.jetbrains.java.decompiler.struct.StructContext;
  import org.jetbrains.java.decompiler.struct.lazy.LazyLoader;
  import org.jetbrains.java.decompiler.util.TextBuffer;
@@ -349,9 +349,9 @@ index 692c1b622ef7e065c9c970cf0a5289f9ca8869f5..f8c413c7b7302b201a739310677d0103
  
  import java.io.File;
  import java.util.HashMap;
-@@ -53,6 +54,15 @@ public class Fernflower implements IDecompiledData {
+@@ -58,6 +59,15 @@ public class Fernflower implements IDecompiledData {
  
-     DecompilerContext context = new DecompilerContext(properties, logger, structContext, classProcessor, interceptor);
+     DecompilerContext context = new DecompilerContext(properties, logger, structContext, classProcessor, interceptor, cancellationManager);
      DecompilerContext.setCurrentContext(context);
 +
 +    String vendor = System.getProperty("java.vendor", "missing vendor");
@@ -364,21 +364,21 @@ index 692c1b622ef7e065c9c970cf0a5289f9ca8869f5..f8c413c7b7302b201a739310677d0103
 +    }
    }
  
-   private static IIdentifierRenamer loadHelper(String className, IFernflowerLogger logger) {
+   public Fernflower(IBytecodeProvider provider, IResultSaver saver, Map<String, Object> customProperties, IFernflowerLogger logger) {
 diff --git a/src/org/jetbrains/java/decompiler/main/extern/IFernflowerPreferences.java b/src/org/jetbrains/java/decompiler/main/extern/IFernflowerPreferences.java
-index b509376a6dbc3780f7c14c631bf51b7fc24aa50d..79108dd8772dc9444d66e6ba0cdd7f56ca382fbd 100644
+index 057cdabc2d52ba09fa8570715f147fe904928ded..c8e52fae331f2eba5f1b1a189368f8c838556cbb 100644
 --- a/src/org/jetbrains/java/decompiler/main/extern/IFernflowerPreferences.java
 +++ b/src/org/jetbrains/java/decompiler/main/extern/IFernflowerPreferences.java
-@@ -36,6 +36,7 @@ public interface IFernflowerPreferences {
-   String VERIFY_ANONYMOUS_CLASSES = "vac";
+@@ -38,6 +38,7 @@ public interface IFernflowerPreferences {
+   String CONVERT_PATTERN_SWITCH = "cps";
  
    String STANDARDIZE_FLOATING_POINT_NUMBERS = "sfn";
 +  String INCLUDE_ENTIRE_CLASSPATH = "iec";
  
    String LOG_LEVEL = "log";
    String MAX_PROCESSING_METHOD = "mpm";
-@@ -84,6 +85,7 @@ public interface IFernflowerPreferences {
-     defaults.put(VERIFY_ANONYMOUS_CLASSES, "0");
+@@ -88,6 +89,7 @@ public interface IFernflowerPreferences {
+     defaults.put(CONVERT_PATTERN_SWITCH, "0");
  
      defaults.put(STANDARDIZE_FLOATING_POINT_NUMBERS, "1");
 +    defaults.put(INCLUDE_ENTIRE_CLASSPATH, "0");
@@ -386,7 +386,7 @@ index b509376a6dbc3780f7c14c631bf51b7fc24aa50d..79108dd8772dc9444d66e6ba0cdd7f56
      defaults.put(LOG_LEVEL, IFernflowerLogger.Severity.INFO.name());
      defaults.put(MAX_PROCESSING_METHOD, "0");
 diff --git a/src/org/jetbrains/java/decompiler/main/rels/ClassWrapper.java b/src/org/jetbrains/java/decompiler/main/rels/ClassWrapper.java
-index 33906d3a433e4421bbf41c6aed5ff566a69a904a..c1126a2b7559e2f8a69a54ee0b7db2ceda3d9776 100644
+index 9da227dedfa702a54dfd2d2593152ba0132b2201..e121730b949be319f19d497ea927bc3de5ee7cf1 100644
 --- a/src/org/jetbrains/java/decompiler/main/rels/ClassWrapper.java
 +++ b/src/org/jetbrains/java/decompiler/main/rels/ClassWrapper.java
 @@ -47,7 +47,7 @@ public class ClassWrapper {
@@ -398,7 +398,7 @@ index 33906d3a433e4421bbf41c6aed5ff566a69a904a..c1126a2b7559e2f8a69a54ee0b7db2ce
        VarProcessor varProc = new VarProcessor(classStruct, mt, md);
        DecompilerContext.startMethod(varProc);
  
-@@ -218,4 +218,4 @@ public class ClassWrapper {
+@@ -205,4 +205,4 @@ public class ClassWrapper {
    public String toString() {
      return classStruct.qualifiedName;
    }
@@ -406,10 +406,10 @@ index 33906d3a433e4421bbf41c6aed5ff566a69a904a..c1126a2b7559e2f8a69a54ee0b7db2ce
 \ No newline at end of file
 +}
 diff --git a/src/org/jetbrains/java/decompiler/modules/decompiler/ExprProcessor.java b/src/org/jetbrains/java/decompiler/modules/decompiler/ExprProcessor.java
-index a242aa9e74698b14e20e27d655a3c8ae141ee2f5..e005b2941b4e76b736b8d00905726ac8500c3dc2 100644
+index bb3f3d069d36472c35e1e534c16838f83fd3a336..fca643b0b5125a1bb60f9e68da9fb54e6d4bfb07 100644
 --- a/src/org/jetbrains/java/decompiler/modules/decompiler/ExprProcessor.java
 +++ b/src/org/jetbrains/java/decompiler/modules/decompiler/ExprProcessor.java
-@@ -29,6 +29,7 @@ import org.jetbrains.java.decompiler.struct.consts.PrimitiveConstant;
+@@ -30,6 +30,7 @@ import org.jetbrains.java.decompiler.struct.consts.PrimitiveConstant;
  import org.jetbrains.java.decompiler.struct.gen.MethodDescriptor;
  import org.jetbrains.java.decompiler.struct.gen.Type;
  import org.jetbrains.java.decompiler.struct.gen.VarType;
@@ -417,16 +417,16 @@ index a242aa9e74698b14e20e27d655a3c8ae141ee2f5..e005b2941b4e76b736b8d00905726ac8
  import org.jetbrains.java.decompiler.util.TextBuffer;
  
  import java.util.*;
-@@ -473,7 +474,7 @@ public class ExprProcessor implements CodeConstants {
-           exprList.add(new ExitExprent(instr.opcode == opc_athrow ? ExitExprent.EXIT_THROW : ExitExprent.EXIT_RETURN,
-                                        instr.opcode == opc_return ? null : stack.pop(),
-                                        instr.opcode == opc_athrow ? null : methodDescriptor.ret,
+@@ -478,7 +479,7 @@ public class ExprProcessor {
+           exprList.add(new ExitExprent(instr.opcode == CodeConstants.opc_athrow ? ExitExprent.EXIT_THROW : ExitExprent.EXIT_RETURN,
+                                        instr.opcode == CodeConstants.opc_return ? null : stack.pop(),
+                                        instr.opcode == CodeConstants.opc_athrow ? null : methodDescriptor.ret,
 -                                       offsets));
-+              offsets, methodDescriptor));
++                                       offsets, methodDescriptor));
            break;
-         case opc_monitorenter:
-         case opc_monitorexit:
-@@ -685,7 +686,15 @@ public class ExprProcessor implements CodeConstants {
+         case CodeConstants.opc_monitorenter:
+         case CodeConstants.opc_monitorexit:
+@@ -690,7 +691,15 @@ public class ExprProcessor {
        sb.append("void");
        return sb.toString();
      }
@@ -442,7 +442,7 @@ index a242aa9e74698b14e20e27d655a3c8ae141ee2f5..e005b2941b4e76b736b8d00905726ac8
        String ret;
        if (getShort) {
          ret = DecompilerContext.getImportCollector().getNestedName(type.getValue());
-@@ -736,7 +745,9 @@ public class ExprProcessor implements CodeConstants {
+@@ -741,7 +750,9 @@ public class ExprProcessor {
        boolean shouldWrite = true;
        if (!enclosingClasses.isEmpty() && i != nestedTypes.size() - 1) {
          String enclosingType = enclosingClasses.remove(0).simpleName;
@@ -451,9 +451,9 @@ index a242aa9e74698b14e20e27d655a3c8ae141ee2f5..e005b2941b4e76b736b8d00905726ac8
 +          // Also write out the enclosing class if we are the outermost, and we're in the type params
 +          || enclosingClasses.isEmpty() && DecompilerContext.getOption(DecompilerContext.IN_CLASS_TYPE_PARAMS);
        }
-       if (i == 0) { // first annotation can be written already
+       if (i == 0) { // the first annotation can be written already
          if (!sb.toString().isEmpty()) shouldWrite = true; // write if annotation exists
-@@ -952,6 +963,8 @@ public class ExprProcessor implements CodeConstants {
+@@ -957,6 +968,8 @@ public class ExprProcessor {
          tracer.incrementCurrentSourceLine();
        }
  
@@ -462,7 +462,7 @@ index a242aa9e74698b14e20e27d655a3c8ae141ee2f5..e005b2941b4e76b736b8d00905726ac8
        TextBuffer content = expr.toJava(indent, tracer);
  
        if (content.length() > 0) {
-@@ -1024,7 +1037,7 @@ public class ExprProcessor implements CodeConstants {
+@@ -1029,7 +1042,7 @@ public class ExprProcessor {
        }
      }
  
@@ -773,7 +773,7 @@ index 67fc1f2beab815f0ca07ecf8a34b98fa23344749..33150f76d649f124bc818036b0f7c633
    // IMatchable implementation
    // *****************************************************************************
 diff --git a/src/org/jetbrains/java/decompiler/modules/decompiler/exps/FieldExprent.java b/src/org/jetbrains/java/decompiler/modules/decompiler/exps/FieldExprent.java
-index 379242393a83c6b3502a88c8d745a5b0bc1b5476..040e5d21985979a9686cb9fee6e3048fe87e5464 100644
+index 532a6fddef38fe53c0fec9fc4a4dd329861ff10a..7d491eeac1553b3ac613b3cb453dc6ac4167bfe3 100644
 --- a/src/org/jetbrains/java/decompiler/modules/decompiler/exps/FieldExprent.java
 +++ b/src/org/jetbrains/java/decompiler/modules/decompiler/exps/FieldExprent.java
 @@ -8,6 +8,8 @@ import org.jetbrains.java.decompiler.main.collectors.BytecodeMappingTracer;
@@ -930,7 +930,7 @@ index b2b26fb3f8b075182caee14d57b4cc351ffb120a..f18ef04b350a5f6d4599282aef5ea3f6
    // IMatchable implementation
    // *****************************************************************************
 diff --git a/src/org/jetbrains/java/decompiler/modules/decompiler/exps/InvocationExprent.java b/src/org/jetbrains/java/decompiler/modules/decompiler/exps/InvocationExprent.java
-index 6776219b98b6b244bb9deda8cffc7b8fc63e4ac6..2d8abaec74b301f76fcd4149600c1da72cc9b6c4 100644
+index 8636747ec128d97f3859ec788af14eb6c0d147f0..bb59c3d47b5bf8b13cfe911593b2d655540158a2 100644
 --- a/src/org/jetbrains/java/decompiler/modules/decompiler/exps/InvocationExprent.java
 +++ b/src/org/jetbrains/java/decompiler/modules/decompiler/exps/InvocationExprent.java
 @@ -19,6 +19,8 @@ import org.jetbrains.java.decompiler.struct.consts.LinkConstant;
@@ -1081,7 +1081,7 @@ index 6776219b98b6b244bb9deda8cffc7b8fc63e4ac6..2d8abaec74b301f76fcd4149600c1da7
  
          // 'byte' and 'short' literals need an explicit narrowing type cast when used as a parameter
          ExprProcessor.getCastedExprent(parameters.get(i), descriptor.params[i], buff, indent, true, ambiguous, true, true, tracer);
-@@ -447,12 +550,11 @@ public class InvocationExprent extends Exprent {
+@@ -451,12 +554,11 @@ public class InvocationExprent extends Exprent {
      return !isStatic && parameters.size() == 0 && className.equals(UNBOXING_METHODS.get(name));
    }
  
@@ -1097,7 +1097,7 @@ index 6776219b98b6b244bb9deda8cffc7b8fc63e4ac6..2d8abaec74b301f76fcd4149600c1da7
      nextMethod:
      for (StructMethod mt : cl.getMethods()) {
        if (name.equals(mt.getName())) {
-@@ -463,11 +565,19 @@ public class InvocationExprent extends Exprent {
+@@ -467,11 +569,19 @@ public class InvocationExprent extends Exprent {
                continue nextMethod;
              }
            }
@@ -1119,7 +1119,7 @@ index 6776219b98b6b244bb9deda8cffc7b8fc63e4ac6..2d8abaec74b301f76fcd4149600c1da7
  
      // check if a call is unambiguous
      StructMethod mt = cl.getMethod(InterpreterUtil.makeUniqueKey(name, stringDescriptor));
-@@ -489,7 +599,14 @@ public class InvocationExprent extends Exprent {
+@@ -493,7 +603,14 @@ public class InvocationExprent extends Exprent {
      BitSet ambiguous = new BitSet(descriptor.params.length);
      for (int i = 0; i < descriptor.params.length; i++) {
        VarType paramType = descriptor.params[i];
@@ -1218,10 +1218,10 @@ index c47ae33d7d62a5049a89bb586032fc18bdc80173..2405fe08663102626f6ab007ccf5ee6c
  
            boolean firstParam = true;
 diff --git a/src/org/jetbrains/java/decompiler/modules/decompiler/exps/VarExprent.java b/src/org/jetbrains/java/decompiler/modules/decompiler/exps/VarExprent.java
-index 8abfd33115391d24d08d349af9a5b64b1d75c1bf..bbe17e0b2c4dcb7214e0c94cc34156e5c9f233a0 100644
+index c8b806da8e624e21e4acbf696b0098ba17b6d02f..97255efeef1f0ee24a0287c3523528d797748854 100644
 --- a/src/org/jetbrains/java/decompiler/modules/decompiler/exps/VarExprent.java
 +++ b/src/org/jetbrains/java/decompiler/modules/decompiler/exps/VarExprent.java
-@@ -20,6 +20,7 @@ import org.jetbrains.java.decompiler.struct.attr.StructLocalVariableTypeTableAtt
+@@ -21,6 +21,7 @@ import org.jetbrains.java.decompiler.struct.attr.StructLocalVariableTypeTableAtt
  import org.jetbrains.java.decompiler.struct.gen.VarType;
  import org.jetbrains.java.decompiler.struct.gen.generics.GenericFieldDescriptor;
  import org.jetbrains.java.decompiler.struct.gen.generics.GenericMain;
@@ -1229,7 +1229,7 @@ index 8abfd33115391d24d08d349af9a5b64b1d75c1bf..bbe17e0b2c4dcb7214e0c94cc34156e5
  import org.jetbrains.java.decompiler.struct.match.MatchEngine;
  import org.jetbrains.java.decompiler.struct.match.MatchNode;
  import org.jetbrains.java.decompiler.struct.match.MatchNode.RuleValue;
-@@ -62,6 +63,22 @@ public class VarExprent extends Exprent {
+@@ -63,6 +64,22 @@ public class VarExprent extends Exprent {
      return getVarType();
    }
  
@@ -1252,7 +1252,7 @@ index 8abfd33115391d24d08d349af9a5b64b1d75c1bf..bbe17e0b2c4dcb7214e0c94cc34156e5
    @Override
    public int getExprentUse() {
      return Exprent.MULTIPLE_USES | Exprent.SIDE_EFFECTS_FREE;
-@@ -139,7 +156,7 @@ public class VarExprent extends Exprent {
+@@ -149,7 +166,7 @@ public class VarExprent extends Exprent {
            if (lvt.getSignature() != null) {
              GenericFieldDescriptor descriptor = GenericMain.parseFieldSignature(lvt.getSignature());
              if (descriptor != null) {
@@ -1261,7 +1261,7 @@ index 8abfd33115391d24d08d349af9a5b64b1d75c1bf..bbe17e0b2c4dcb7214e0c94cc34156e5
                return;
              }
            }
-@@ -165,7 +182,7 @@ public class VarExprent extends Exprent {
+@@ -175,7 +192,7 @@ public class VarExprent extends Exprent {
                if (signature != null) {
                  GenericFieldDescriptor descriptor = GenericMain.parseFieldSignature(signature);
                  if (descriptor != null) {
@@ -1304,7 +1304,7 @@ index f2c0589344ed69685dd3103d060109c700c7ee41..f9a7e55c108959b9696cb52cfd91aee3
          this.cast = ExprProcessor.getCastTypeName(lvt.getVarType(), false, Collections.emptyList());
        else if (type != null)
 diff --git a/src/org/jetbrains/java/decompiler/struct/StructClass.java b/src/org/jetbrains/java/decompiler/struct/StructClass.java
-index 0b4275f57e3092623c4e462b032b418cf2bdd84b..bead2d172e27075e63f6977562988041a96a4371 100644
+index 148c0ec38b3012cd4fb98cf16feaf5180fe85247..81ecea2c35720616709ac51361ef300852db33c3 100644
 --- a/src/org/jetbrains/java/decompiler/struct/StructClass.java
 +++ b/src/org/jetbrains/java/decompiler/struct/StructClass.java
 @@ -2,20 +2,32 @@
@@ -1384,7 +1384,7 @@ index 0b4275f57e3092623c4e462b032b418cf2bdd84b..bead2d172e27075e63f6977562988041
    }
  
    public boolean hasField(String name, String descriptor) {
-@@ -242,4 +265,106 @@ public class StructClass extends StructMember {
+@@ -254,4 +277,106 @@ public class StructClass extends StructMember {
    protected Type getType() {
      return null;
    }
@@ -2623,17 +2623,17 @@ index 0000000000000000000000000000000000000000..cc91edd842805b55a757c5794b4fb7dc
 +    }
 +}
 diff --git a/test/org/jetbrains/java/decompiler/SingleClassesTest.java b/test/org/jetbrains/java/decompiler/SingleClassesTest.java
-index dd0e178cc1df1c6edc9e77e3149c2b0e9bffe884..645d99f07322c311a20b5fd76a5235de6cdae74d 100644
+index 0adb17a8a98a6c14e0d05ebe34ddced107e46b9a..034eef76ce30ca4f97f8c1bd3262bf08f6182762 100644
 --- a/test/org/jetbrains/java/decompiler/SingleClassesTest.java
 +++ b/test/org/jetbrains/java/decompiler/SingleClassesTest.java
-@@ -23,9 +23,12 @@ public class SingleClassesTest extends SingleClassesTestBase {
-     return Map.of(IFernflowerPreferences.BYTECODE_SOURCE_MAPPING, "1",
-                          IFernflowerPreferences.DUMP_ORIGINAL_LINES, "1",
+@@ -25,10 +25,12 @@ public class SingleClassesTest extends SingleClassesTestBase {
                           IFernflowerPreferences.IGNORE_INVALID_BYTECODE, "1",
--                         IFernflowerPreferences.VERIFY_ANONYMOUS_CLASSES, "1");
-+                         IFernflowerPreferences.VERIFY_ANONYMOUS_CLASSES, "1",
+                          IFernflowerPreferences.VERIFY_ANONYMOUS_CLASSES, "1",
+                          IFernflowerPreferences.CONVERT_PATTERN_SWITCH, "1",
+-                         IFernflowerPreferences.CONVERT_RECORD_PATTERN, "1"
++                         IFernflowerPreferences.CONVERT_RECORD_PATTERN, "1",
 +                         IFernflowerPreferences.INCLUDE_ENTIRE_CLASSPATH, "1"
-+);
+     );
    }
  
 +  @Test public void testGenerics() { doTest("pkg/TestGenerics"); }

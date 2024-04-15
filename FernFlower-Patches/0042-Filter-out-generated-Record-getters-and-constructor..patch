@@ -6,10 +6,10 @@ Subject: [PATCH] Filter out generated Record getters and constructor. Make
 
 
 diff --git a/src/org/jetbrains/java/decompiler/main/ClassWriter.java b/src/org/jetbrains/java/decompiler/main/ClassWriter.java
-index d9c338ff9189953329a0812250fb494656eb749a..f217e235da064b672d7ec6b40f6d4bdce27cc65a 100644
+index fbdda29ce339b9f6a5ad89878260c55e99ec1e61..9baea1fc3744535c38f3cc5a6ec51551766767b5 100644
 --- a/src/org/jetbrains/java/decompiler/main/ClassWriter.java
 +++ b/src/org/jetbrains/java/decompiler/main/ClassWriter.java
-@@ -355,6 +355,18 @@ public class ClassWriter {
+@@ -356,6 +356,18 @@ public class ClassWriter {
            return str.startsWith("return this." + name + "<invokedynamic>(this");
          }
        }
@@ -28,7 +28,7 @@ index d9c338ff9189953329a0812250fb494656eb749a..f217e235da064b672d7ec6b40f6d4bdc
      }
      return false;
    }
-@@ -680,7 +692,7 @@ public class ClassWriter {
+@@ -684,7 +696,7 @@ public class ClassWriter {
        boolean isInterface = cl.hasModifier(CodeConstants.ACC_INTERFACE);
        boolean isAnnotation = cl.hasModifier(CodeConstants.ACC_ANNOTATION);
        boolean isDeprecated = mt.hasAttribute(StructGeneralAttribute.ATTRIBUTE_DEPRECATED);
@@ -37,7 +37,7 @@ index d9c338ff9189953329a0812250fb494656eb749a..f217e235da064b672d7ec6b40f6d4bdc
  
        MethodDescriptor md = MethodDescriptor.parseDescriptor(mt, node);
  
-@@ -733,6 +745,41 @@ public class ClassWriter {
+@@ -737,6 +749,41 @@ public class ClassWriter {
            name = node.simpleName;
            init = true;
          }
@@ -79,7 +79,7 @@ index d9c338ff9189953329a0812250fb494656eb749a..f217e235da064b672d7ec6b40f6d4bdc
        }
        else if (CodeConstants.CLINIT_NAME.equals(name)) {
          name = "";
-@@ -757,6 +804,7 @@ public class ClassWriter {
+@@ -761,6 +808,7 @@ public class ClassWriter {
          }
  
          buffer.append(toValidJavaIdentifier(name));
@@ -87,7 +87,7 @@ index d9c338ff9189953329a0812250fb494656eb749a..f217e235da064b672d7ec6b40f6d4bdc
          buffer.append('(');
  
          List<VarVersionPair> mask = methodWrapper.synthParameters;
-@@ -843,6 +891,7 @@ public class ClassWriter {
+@@ -847,6 +895,7 @@ public class ClassWriter {
              buffer.append(ExprProcessor.getCastTypeName(type, Collections.emptyList()));
            }
          }
@@ -95,7 +95,7 @@ index d9c338ff9189953329a0812250fb494656eb749a..f217e235da064b672d7ec6b40f6d4bdc
        }
  
        tracer.incrementCurrentSourceLine(buffer.countLines(start_index_method));
-@@ -876,7 +925,7 @@ public class ClassWriter {
+@@ -880,7 +929,7 @@ public class ClassWriter {
              BytecodeMappingTracer codeTracer = new BytecodeMappingTracer(tracer.getCurrentSourceLine());
              TextBuffer code = root.toJava(indent + 1, codeTracer);
  

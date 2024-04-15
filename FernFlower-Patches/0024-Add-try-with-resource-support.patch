@@ -5,10 +5,10 @@ Subject: [PATCH] Add try with resource support
 
 
 diff --git a/src/org/jetbrains/java/decompiler/main/rels/MethodProcessorRunnable.java b/src/org/jetbrains/java/decompiler/main/rels/MethodProcessorRunnable.java
-index fa4b5ed56fa58f2d864ea3acd758a36fa8e23e7a..4713a0212ee1ae4cc269dd24f2227a91a2c9beed 100644
+index 23c2475bc9e0136c1534e08dc994db33deb827ec..748258292c65b2921df4cc6ef83313c31ca55734 100644
 --- a/src/org/jetbrains/java/decompiler/main/rels/MethodProcessorRunnable.java
 +++ b/src/org/jetbrains/java/decompiler/main/rels/MethodProcessorRunnable.java
-@@ -190,6 +190,10 @@ public class MethodProcessorRunnable implements Runnable {
+@@ -202,6 +202,10 @@ public class MethodProcessorRunnable implements Runnable {
  
        LabelHelper.identifyLabels(root);
  
@@ -905,10 +905,10 @@ index b35985211d1f0488f76cbd6e87f18e3732b2d589..13d023de573ced3cde29f9b42212051a
  
        if (lstVars != null) {
 diff --git a/test/org/jetbrains/java/decompiler/SingleClassesTest.java b/test/org/jetbrains/java/decompiler/SingleClassesTest.java
-index 645d99f07322c311a20b5fd76a5235de6cdae74d..16ceb1e8e47c90da72ef3039cf625eec25b68223 100644
+index 034eef76ce30ca4f97f8c1bd3262bf08f6182762..3c79fdc6e1a4a89b7b068493258d661c91f1a436 100644
 --- a/test/org/jetbrains/java/decompiler/SingleClassesTest.java
 +++ b/test/org/jetbrains/java/decompiler/SingleClassesTest.java
-@@ -143,6 +143,7 @@ public class SingleClassesTest extends SingleClassesTestBase {
+@@ -161,6 +161,7 @@ public class SingleClassesTest extends SingleClassesTestBase {
    @Test public void testRecordVararg() { doTest("records/TestRecordVararg"); }
    @Test public void testRecordGenericVararg() { doTest("records/TestRecordGenericVararg"); }
    @Test public void testRecordAnno() { doTest("records/TestRecordAnno"); }

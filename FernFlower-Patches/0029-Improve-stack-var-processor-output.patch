@@ -5,19 +5,19 @@ Subject: [PATCH] Improve stack var processor output
 
 
 diff --git a/src/org/jetbrains/java/decompiler/main/rels/MethodProcessorRunnable.java b/src/org/jetbrains/java/decompiler/main/rels/MethodProcessorRunnable.java
-index 4713a0212ee1ae4cc269dd24f2227a91a2c9beed..9ae846d540337db99dc054ec1a43271e2d41ab7d 100644
+index 748258292c65b2921df4cc6ef83313c31ca55734..fe439587f4cf3e0956a5d1d232bc0945bce220bd 100644
 --- a/src/org/jetbrains/java/decompiler/main/rels/MethodProcessorRunnable.java
 +++ b/src/org/jetbrains/java/decompiler/main/rels/MethodProcessorRunnable.java
-@@ -183,11 +183,12 @@ public class MethodProcessorRunnable implements Runnable {
+@@ -195,11 +195,12 @@ public class MethodProcessorRunnable implements Runnable {
        if (DecompilerContext.getOption(IFernflowerPreferences.IDEA_NOT_NULL_ANNOTATION)) {
          if (IdeaNotNullHelper.removeHardcodedChecks(root, mt)) {
            SequenceHelper.condenseSequences(root);
--          stackProc.simplifyStackVars(root, mt, cl);
+-          StackVarsProcessor.simplifyStackVars(root, mt, cl);
 -          varProc.setVarVersions(root);
          }
        }
  
-+      stackProc.simplifyStackVars(root, mt, cl);
++      StackVarsProcessor.simplifyStackVars(root, mt, cl);
 +      varProc.setVarVersions(root);
 +
        LabelHelper.identifyLabels(root);
@@ -82,22 +82,21 @@ index efa677ae6cfdc08635eff080c7241ec086e5c945..36cc1c986f5a5aeeea6f4cfe3897666e
      if (first.type == Exprent.EXPRENT_ASSIGNMENT) {
        AssignmentExprent asf = (AssignmentExprent)first;
 diff --git a/src/org/jetbrains/java/decompiler/modules/decompiler/StackVarsProcessor.java b/src/org/jetbrains/java/decompiler/modules/decompiler/StackVarsProcessor.java
-index d8fd9bdf784704836e69cfdd1596ae29b2732232..139ccdb55347a5d66627c1489ee73910fed46f05 100644
+index b3db936bd544b29691482f58e48422f3fafb2d1b..f62f2f6cba3a5a069d47c414c15fc7aba1202726 100644
 --- a/src/org/jetbrains/java/decompiler/modules/decompiler/StackVarsProcessor.java
 +++ b/src/org/jetbrains/java/decompiler/modules/decompiler/StackVarsProcessor.java
-@@ -2,6 +2,8 @@
- package org.jetbrains.java.decompiler.modules.decompiler;
+@@ -3,6 +3,7 @@ package org.jetbrains.java.decompiler.modules.decompiler;
  
  import org.jetbrains.java.decompiler.code.CodeConstants;
+ import org.jetbrains.java.decompiler.main.CancellationManager;
 +import org.jetbrains.java.decompiler.main.ClassesProcessor.ClassNode;
-+import org.jetbrains.java.decompiler.main.DecompilerContext;
+ import org.jetbrains.java.decompiler.main.DecompilerContext;
  import org.jetbrains.java.decompiler.modules.decompiler.exps.*;
  import org.jetbrains.java.decompiler.modules.decompiler.sforms.*;
- import org.jetbrains.java.decompiler.modules.decompiler.sforms.DirectNode.DirectNodeType;
-@@ -16,11 +18,14 @@ import org.jetbrains.java.decompiler.modules.decompiler.vars.VarVersionPair;
- import org.jetbrains.java.decompiler.modules.decompiler.vars.VarVersionsGraph;
- import org.jetbrains.java.decompiler.struct.StructClass;
+@@ -20,11 +21,14 @@ import org.jetbrains.java.decompiler.struct.StructClass;
  import org.jetbrains.java.decompiler.struct.StructMethod;
+ import org.jetbrains.java.decompiler.struct.attr.StructGeneralAttribute;
+ import org.jetbrains.java.decompiler.struct.attr.StructLocalVariableTableAttribute;
 +import org.jetbrains.java.decompiler.struct.gen.MethodDescriptor;
 +import org.jetbrains.java.decompiler.struct.gen.VarType;
  import org.jetbrains.java.decompiler.util.FastSparseSetFactory.FastSparseSet;
@@ -108,10 +107,10 @@ index d8fd9bdf784704836e69cfdd1596ae29b2732232..139ccdb55347a5d66627c1489ee73910
 +import java.util.stream.Collectors;
  
  public class StackVarsProcessor {
-   public void simplifyStackVars(RootStatement root, StructMethod mt, StructClass cl) {
-@@ -29,11 +34,12 @@ public class StackVarsProcessor {
- 
+   public static void simplifyStackVars(RootStatement root, StructMethod mt, StructClass cl) {
+@@ -36,11 +40,12 @@ public class StackVarsProcessor {
      while (true) {
+       cancellationManager.checkCanceled();
        boolean found = false;
 +      boolean first = ssau == null;
  
@@ -121,12 +120,13 @@ index d8fd9bdf784704836e69cfdd1596ae29b2732232..139ccdb55347a5d66627c1489ee73910
 -      SimplifyExprentsHelper sehelper = new SimplifyExprentsHelper(ssau == null);
 +      SimplifyExprentsHelper sehelper = new SimplifyExprentsHelper(first);
        while (sehelper.simplifyStackVarsStatement(root, setReorderedIfs, ssa, cl)) {
+         cancellationManager.checkCanceled();
          found = true;
-       }
-@@ -45,6 +51,10 @@ public class StackVarsProcessor {
+@@ -53,6 +58,11 @@ public class StackVarsProcessor {
        ssau = new SSAUConstructorSparseEx();
        ssau.splitVariables(root, mt);
- 
+       cancellationManager.checkCanceled();
++
 +      if (first) {
 +        setEffectivelyFinalVars(root, ssau, new HashMap<>());
 +      }
@@ -134,7 +134,7 @@ index d8fd9bdf784704836e69cfdd1596ae29b2732232..139ccdb55347a5d66627c1489ee73910
        if (iterateStatements(root, ssau)) {
          found = true;
        }
-@@ -267,7 +277,7 @@ public class StackVarsProcessor {
+@@ -280,7 +290,7 @@ public class StackVarsProcessor {
        }
      }
  
@@ -143,7 +143,7 @@ index d8fd9bdf784704836e69cfdd1596ae29b2732232..139ccdb55347a5d66627c1489ee73910
        return new int[]{-1, changed};
      }
  
-@@ -445,7 +455,7 @@ public class StackVarsProcessor {
+@@ -474,7 +484,7 @@ public class StackVarsProcessor {
        }
      }
  
@@ -152,7 +152,7 @@ index d8fd9bdf784704836e69cfdd1596ae29b2732232..139ccdb55347a5d66627c1489ee73910
        return new Object[]{null, changed, false};
      }
  
-@@ -664,4 +674,164 @@ public class StackVarsProcessor {
+@@ -693,4 +703,164 @@ public class StackVarsProcessor {
  
      return map;
    }
@@ -318,7 +318,7 @@ index d8fd9bdf784704836e69cfdd1596ae29b2732232..139ccdb55347a5d66627c1489ee73910
 +  }
  }
 diff --git a/src/org/jetbrains/java/decompiler/modules/decompiler/exps/InvocationExprent.java b/src/org/jetbrains/java/decompiler/modules/decompiler/exps/InvocationExprent.java
-index 1661a1deb02a4caa5238b5342e5d6043e4e37b7b..4633697497baaa977d1f5451c5340eae3769472f 100644
+index 0985f80144e92518cf404297dfe7c50b41455a08..a1a357fb2bfc8991f5db7ac9fa61f7e6367356d2 100644
 --- a/src/org/jetbrains/java/decompiler/modules/decompiler/exps/InvocationExprent.java
 +++ b/src/org/jetbrains/java/decompiler/modules/decompiler/exps/InvocationExprent.java
 @@ -162,6 +162,11 @@ public class InvocationExprent extends Exprent {
@@ -334,10 +334,10 @@ index 1661a1deb02a4caa5238b5342e5d6043e4e37b7b..4633697497baaa977d1f5451c5340eae
  
    @Override
 diff --git a/src/org/jetbrains/java/decompiler/modules/decompiler/exps/VarExprent.java b/src/org/jetbrains/java/decompiler/modules/decompiler/exps/VarExprent.java
-index e7bb1eb49b73102af8f967b7d5d3dbed5a1fc86a..8807a1534a587af70c2779f2bf8f7cdf3ec9d7f2 100644
+index 5cdfd00930aaed8a636a9303e1984ebbc39aeecc..fb550d7e70d5d53a13c69a35a0bb7a9ce2a8182b 100644
 --- a/src/org/jetbrains/java/decompiler/modules/decompiler/exps/VarExprent.java
 +++ b/src/org/jetbrains/java/decompiler/modules/decompiler/exps/VarExprent.java
-@@ -46,6 +46,7 @@ public class VarExprent extends Exprent {
+@@ -47,6 +47,7 @@ public class VarExprent extends Exprent {
    private boolean classDef = false;
    private boolean stack = false;
    private LocalVariable lvt = null;
@@ -345,7 +345,7 @@ index e7bb1eb49b73102af8f967b7d5d3dbed5a1fc86a..8807a1534a587af70c2779f2bf8f7cdf
  
    public VarExprent(int index, VarType varType, VarProcessor processor) {
      this(index, varType, processor, null);
-@@ -98,6 +99,7 @@ public class VarExprent extends Exprent {
+@@ -99,6 +100,7 @@ public class VarExprent extends Exprent {
      var.setClassDef(classDef);
      var.setStack(stack);
      var.setLVT(lvt);
@@ -353,7 +353,7 @@ index e7bb1eb49b73102af8f967b7d5d3dbed5a1fc86a..8807a1534a587af70c2779f2bf8f7cdf
      return var;
    }
  
-@@ -311,6 +313,14 @@ public class VarExprent extends Exprent {
+@@ -326,6 +328,14 @@ public class VarExprent extends Exprent {
      return lvt;
    }
  
@@ -369,10 +369,10 @@ index e7bb1eb49b73102af8f967b7d5d3dbed5a1fc86a..8807a1534a587af70c2779f2bf8f7cdf
      VarVersionPair pair = getVarVersionPair();
      if (lvt != null)
 diff --git a/src/org/jetbrains/java/decompiler/modules/decompiler/sforms/SSAConstructorSparseEx.java b/src/org/jetbrains/java/decompiler/modules/decompiler/sforms/SSAConstructorSparseEx.java
-index 82e8870671180ade3be93bbb54920b0321a9912b..e269d88570f392511ecc19984feeec2dee66019b 100644
+index b789b53d82f800131bccf702c5a53c6269efa6f5..9326fd7d020479b2578fbcf3ca87a21dbd22dad5 100644
 --- a/src/org/jetbrains/java/decompiler/modules/decompiler/sforms/SSAConstructorSparseEx.java
 +++ b/src/org/jetbrains/java/decompiler/modules/decompiler/sforms/SSAConstructorSparseEx.java
-@@ -98,7 +98,7 @@ public class SSAConstructorSparseEx {
+@@ -102,7 +102,7 @@ public class SSAConstructorSparseEx {
        mergeInVarMaps(node, dgraph);
  
        SFormsFastMapDirect varmap = inVarVersions.get(node.id);
@@ -381,7 +381,7 @@ index 82e8870671180ade3be93bbb54920b0321a9912b..e269d88570f392511ecc19984feeec2d
  
        SFormsFastMapDirect[] varmaparr = new SFormsFastMapDirect[]{varmap, null};
  
-@@ -155,7 +155,7 @@ public class SSAConstructorSparseEx {
+@@ -159,7 +159,7 @@ public class SSAConstructorSparseEx {
  
              SFormsFastMapDirect varmapFalse;
              if (varmaparr[1] == null) {
@@ -390,7 +390,7 @@ index 82e8870671180ade3be93bbb54920b0321a9912b..e269d88570f392511ecc19984feeec2d
              }
              else {
                varmapFalse = varmaparr[1];
-@@ -175,7 +175,7 @@ public class SSAConstructorSparseEx {
+@@ -179,7 +179,7 @@ public class SSAConstructorSparseEx {
            case FunctionExprent.FUNCTION_CADD -> {
              processExprent(func.getLstOperands().get(0), varmaparr);
  
@@ -399,7 +399,7 @@ index 82e8870671180ade3be93bbb54920b0321a9912b..e269d88570f392511ecc19984feeec2d
  
              processExprent(func.getLstOperands().get(1), varmaparrAnd);
  
-@@ -190,7 +190,7 @@ public class SSAConstructorSparseEx {
+@@ -194,7 +194,7 @@ public class SSAConstructorSparseEx {
              processExprent(func.getLstOperands().get(0), varmaparr);
  
              SFormsFastMapDirect[] varmaparrOr =
@@ -408,7 +408,7 @@ index 82e8870671180ade3be93bbb54920b0321a9912b..e269d88570f392511ecc19984feeec2d
  
              processExprent(func.getLstOperands().get(1), varmaparrOr);
  
-@@ -241,7 +241,7 @@ public class SSAConstructorSparseEx {
+@@ -245,7 +245,7 @@ public class SSAConstructorSparseEx {
        Integer varindex = vardest.getIndex();
        FastSparseSet<Integer> vers = varmap.get(varindex);
  
@@ -417,7 +417,7 @@ index 82e8870671180ade3be93bbb54920b0321a9912b..e269d88570f392511ecc19984feeec2d
        if (cardinality == 1) { // == 1
          // set version
          Integer it = vers.iterator().next();
-@@ -266,7 +266,17 @@ public class SSAConstructorSparseEx {
+@@ -270,7 +270,17 @@ public class SSAConstructorSparseEx {
            // create new phi node
            phi.put(new VarVersionPair(varindex, nextver), vers);
          }
@@ -437,10 +437,10 @@ index 82e8870671180ade3be93bbb54920b0321a9912b..e269d88570f392511ecc19984feeec2d
    }
  
 diff --git a/src/org/jetbrains/java/decompiler/modules/decompiler/sforms/SSAUConstructorSparseEx.java b/src/org/jetbrains/java/decompiler/modules/decompiler/sforms/SSAUConstructorSparseEx.java
-index 5e1e323a6e2043d776c513e800056be200ab2971..0262a3378080ce4a283ee12a44d11e921fca5777 100644
+index 725344008926731a64f9fd62df2976149a65ea37..12f91ae556c057efed7f4cdfa23e192a5591e837 100644
 --- a/src/org/jetbrains/java/decompiler/modules/decompiler/sforms/SSAUConstructorSparseEx.java
 +++ b/src/org/jetbrains/java/decompiler/modules/decompiler/sforms/SSAUConstructorSparseEx.java
-@@ -64,6 +64,9 @@ public class SSAUConstructorSparseEx {
+@@ -66,6 +66,9 @@ public class SSAUConstructorSparseEx {
    // set factory
    private FastSparseSetFactory<Integer> factory;
  
@@ -448,9 +448,9 @@ index 5e1e323a6e2043d776c513e800056be200ab2971..0262a3378080ce4a283ee12a44d11e92
 +  private HashMap<VarVersionPair, VarVersionPair> varAssignmentMap = new HashMap<>();
 +
    public void splitVariables(RootStatement root, StructMethod mt) {
+     CancellationManager cancellationManager = DecompilerContext.getCancellationManager();
  
-     FlattenStatementsHelper flatthelper = new FlattenStatementsHelper();
-@@ -105,7 +108,7 @@ public class SSAUConstructorSparseEx {
+@@ -110,7 +113,7 @@ public class SSAUConstructorSparseEx {
        updated.remove(node.id);
        mergeInVarMaps(node, dgraph);
  
@@ -459,7 +459,7 @@ index 5e1e323a6e2043d776c513e800056be200ab2971..0262a3378080ce4a283ee12a44d11e92
  
        SFormsFastMapDirect[] varmaparr = new SFormsFastMapDirect[]{varmap, null};
  
-@@ -174,7 +177,7 @@ public class SSAUConstructorSparseEx {
+@@ -180,7 +183,7 @@ public class SSAUConstructorSparseEx {
  
              SFormsFastMapDirect varmapFalse;
              if (varmaparr[1] == null) {
@@ -468,7 +468,7 @@ index 5e1e323a6e2043d776c513e800056be200ab2971..0262a3378080ce4a283ee12a44d11e92
              }
              else {
                varmapFalse = varmaparr[1];
-@@ -194,7 +197,7 @@ public class SSAUConstructorSparseEx {
+@@ -200,7 +203,7 @@ public class SSAUConstructorSparseEx {
            case FunctionExprent.FUNCTION_CADD -> {
              processExprent(func.getLstOperands().get(0), varmaparr, stat, calcLiveVars);
  
@@ -477,7 +477,7 @@ index 5e1e323a6e2043d776c513e800056be200ab2971..0262a3378080ce4a283ee12a44d11e92
  
              processExprent(func.getLstOperands().get(1), varmaparrAnd, stat, calcLiveVars);
  
-@@ -209,7 +212,7 @@ public class SSAUConstructorSparseEx {
+@@ -215,7 +218,7 @@ public class SSAUConstructorSparseEx {
              processExprent(func.getLstOperands().get(0), varmaparr, stat, calcLiveVars);
  
              SFormsFastMapDirect[] varmaparrOr =
@@ -486,7 +486,7 @@ index 5e1e323a6e2043d776c513e800056be200ab2971..0262a3378080ce4a283ee12a44d11e92
  
              processExprent(func.getLstOperands().get(1), varmaparrOr, stat, calcLiveVars);
  
-@@ -290,7 +293,7 @@ public class SSAUConstructorSparseEx {
+@@ -296,7 +299,7 @@ public class SSAUConstructorSparseEx {
          varassign.setVersion(nextver);
  
          // ssu graph
@@ -495,7 +495,7 @@ index 5e1e323a6e2043d776c513e800056be200ab2971..0262a3378080ce4a283ee12a44d11e92
  
          setCurrentVar(varmap, varindex, nextver);
        }
-@@ -300,6 +303,17 @@ public class SSAUConstructorSparseEx {
+@@ -306,6 +309,17 @@ public class SSAUConstructorSparseEx {
          }
          setCurrentVar(varmap, varindex, varassign.getVersion());
        }
@@ -513,7 +513,7 @@ index 5e1e323a6e2043d776c513e800056be200ab2971..0262a3378080ce4a283ee12a44d11e92
      }
      else if (expr.type == Exprent.EXPRENT_FUNCTION) { // MM or PP function
        FunctionExprent func = (FunctionExprent)expr;
-@@ -352,7 +366,7 @@ public class SSAUConstructorSparseEx {
+@@ -358,7 +372,7 @@ public class SSAUConstructorSparseEx {
  
        FastSparseSet<Integer> vers = varmap.get(varindex);
  
@@ -522,7 +522,7 @@ index 5e1e323a6e2043d776c513e800056be200ab2971..0262a3378080ce4a283ee12a44d11e92
        if (cardinality == 1) { // size == 1
          if (current_vers != 0) {
            if (calcLiveVars) {
-@@ -400,7 +414,21 @@ public class SSAUConstructorSparseEx {
+@@ -406,7 +420,21 @@ public class SSAUConstructorSparseEx {
          }
  
          createOrUpdatePhiNode(new VarVersionPair(varindex, current_vers), vers, stat);
@@ -545,7 +545,7 @@ index 5e1e323a6e2043d776c513e800056be200ab2971..0262a3378080ce4a283ee12a44d11e92
      }
    }
  
-@@ -467,7 +495,7 @@ public class SSAUConstructorSparseEx {
+@@ -473,7 +501,7 @@ public class SSAUConstructorSparseEx {
  
      VarVersionNode node = nodes.getWithKey(varpaar);
  
@@ -554,7 +554,7 @@ index 5e1e323a6e2043d776c513e800056be200ab2971..0262a3378080ce4a283ee12a44d11e92
    }
  
    private Integer getNextFreeVersion(Integer var, Statement stat) {
-@@ -810,4 +838,8 @@ public class SSAUConstructorSparseEx {
+@@ -816,4 +844,8 @@ public class SSAUConstructorSparseEx {
    public HashMap<Integer, Integer> getMapFieldVars() {
      return mapFieldVars;
    }

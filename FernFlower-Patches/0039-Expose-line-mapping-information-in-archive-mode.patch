@@ -10,10 +10,10 @@ Add -dcl {dump code lines} to dump this line data to a file in the output archiv
 This will allow external projects to do this remapping as well.
 
 diff --git a/src/org/jetbrains/java/decompiler/main/decompiler/ConsoleDecompiler.java b/src/org/jetbrains/java/decompiler/main/decompiler/ConsoleDecompiler.java
-index 7af078ed357349951585906564c1bf8239c0c810..b4869c2a756adb1c2da8b62fd8d4dc3f3f7cb2ca 100644
+index f9c6907b0436de3259b22ff287b64ba745e33e55..3e81aa1cde7239c69476e92e854848e451d616bd 100644
 --- a/src/org/jetbrains/java/decompiler/main/decompiler/ConsoleDecompiler.java
 +++ b/src/org/jetbrains/java/decompiler/main/decompiler/ConsoleDecompiler.java
-@@ -255,7 +255,7 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
+@@ -261,7 +261,7 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
  
    @Override
    public void saveDirEntry(String path, String archiveName, String entryName) {
@@ -22,7 +22,7 @@ index 7af078ed357349951585906564c1bf8239c0c810..b4869c2a756adb1c2da8b62fd8d4dc3f
    }
  
    @Override
-@@ -285,7 +285,11 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
+@@ -291,7 +291,11 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
    }
  
    @Override
@@ -35,7 +35,7 @@ index 7af078ed357349951585906564c1bf8239c0c810..b4869c2a756adb1c2da8b62fd8d4dc3f
      String file = new File(getAbsolutePath(path), archiveName).getPath();
  
      if (!checkEntry(entryName, file)) {
-@@ -296,9 +300,12 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
+@@ -302,9 +306,12 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
        ZipOutputStream out = mapArchiveStreams.get(file);
        ZipEntry entry = new ZipEntry(entryName);
        entry.setTime(STABLE_ZIP_TIMESTAMP);
@@ -136,10 +136,10 @@ index 98fe00844f7b4d5bbdcef09e379bb8e634a96dff..114b7ab0681c661c5486e20f42993402
      } catch (IOException e) {
        DecompilerContext.getLogger().writeMessage("Cannot write entry " + entryName + " to " + file, e);
 diff --git a/src/org/jetbrains/java/decompiler/main/extern/IFernflowerPreferences.java b/src/org/jetbrains/java/decompiler/main/extern/IFernflowerPreferences.java
-index 19ba388f94dfd41c9a544ea58295ef6f69141738..2a5d4e6285a08d313ff3ba97ec07d1765d5db923 100644
+index bfd9372cd9c5b8a2f7e6714cb63b13b0435f376f..12ffd8bb7bab50d3db8d924ad2a129527a489658 100644
 --- a/src/org/jetbrains/java/decompiler/main/extern/IFernflowerPreferences.java
 +++ b/src/org/jetbrains/java/decompiler/main/extern/IFernflowerPreferences.java
-@@ -61,6 +61,8 @@ public interface IFernflowerPreferences {
+@@ -63,6 +63,8 @@ public interface IFernflowerPreferences {
  
    String SKIP_EXTRA_FILES = "sef";
  
@@ -148,7 +148,7 @@ index 19ba388f94dfd41c9a544ea58295ef6f69141738..2a5d4e6285a08d313ff3ba97ec07d176
    Map<String, Object> DEFAULTS = getDefaults();
  
    static Map<String, Object> getDefaults() {
-@@ -111,6 +113,7 @@ public interface IFernflowerPreferences {
+@@ -115,6 +117,7 @@ public interface IFernflowerPreferences {
      defaults.put(USE_JAD_VARNAMING, "0");
      defaults.put(USE_JAD_PARAMETER_RENAMING, "0");
      defaults.put(SKIP_EXTRA_FILES, "0");

@@ -7,10 +7,10 @@ Running JVM and timestamp result in output varying between
 environments and runs.
 
 diff --git a/src/org/jetbrains/java/decompiler/main/ClassesProcessor.java b/src/org/jetbrains/java/decompiler/main/ClassesProcessor.java
-index 8dc45a1de093a5e81ef74e034faf2041618ced99..8173ecd04da97e5e9a8f5f9a2e309726439697e0 100644
+index 9fc0250da6bd987e545631c2586f90759e5a8ff0..eadb57d1766d7ddbced6a18da21369375cdab1fe 100644
 --- a/src/org/jetbrains/java/decompiler/main/ClassesProcessor.java
 +++ b/src/org/jetbrains/java/decompiler/main/ClassesProcessor.java
-@@ -249,6 +249,7 @@ public class ClassesProcessor implements CodeConstants {
+@@ -249,6 +249,7 @@ public class ClassesProcessor {
                  stack.add(nestedClass);
                }
              }
@@ -18,7 +18,7 @@ index 8dc45a1de093a5e81ef74e034faf2041618ced99..8173ecd04da97e5e9a8f5f9a2e309726
            }
          }
        }
-@@ -451,7 +452,7 @@ public class ClassesProcessor implements CodeConstants {
+@@ -451,7 +452,7 @@ public class ClassesProcessor {
    }
  
  
@@ -27,7 +27,7 @@ index 8dc45a1de093a5e81ef74e034faf2041618ced99..8173ecd04da97e5e9a8f5f9a2e309726
      public static final int CLASS_ROOT = 0;
      public static final int CLASS_MEMBER = 1;
      public static final int CLASS_ANONYMOUS = 2;
-@@ -542,6 +543,12 @@ public class ClassesProcessor implements CodeConstants {
+@@ -542,6 +543,12 @@ public class ClassesProcessor {
        isNonSealed = nonSealed;
      }
  
@@ -41,10 +41,10 @@ index 8dc45a1de093a5e81ef74e034faf2041618ced99..8173ecd04da97e5e9a8f5f9a2e309726
        public String method_name;
        public String method_descriptor;
 diff --git a/src/org/jetbrains/java/decompiler/main/decompiler/ConsoleDecompiler.java b/src/org/jetbrains/java/decompiler/main/decompiler/ConsoleDecompiler.java
-index 75d4d0937f1e39fe630b1318a4ad531de7fbd644..d0ae9a7c3b20de44cb202390cc0dfd4d690fee64 100644
+index febdd061fa5054ceeb14d267b6fb4b10cb528370..5c1188023ab7fb5e453fdb2d8d958bb014bcb058 100644
 --- a/src/org/jetbrains/java/decompiler/main/decompiler/ConsoleDecompiler.java
 +++ b/src/org/jetbrains/java/decompiler/main/decompiler/ConsoleDecompiler.java
-@@ -11,7 +11,7 @@ import org.jetbrains.java.decompiler.util.InterpreterUtil;
+@@ -12,7 +12,7 @@ import org.jetbrains.java.decompiler.util.InterpreterUtil;
  import java.io.*;
  import java.nio.charset.StandardCharsets;
  import java.util.*;
@@ -53,7 +53,7 @@ index 75d4d0937f1e39fe630b1318a4ad531de7fbd644..d0ae9a7c3b20de44cb202390cc0dfd4d
  import java.util.jar.Manifest;
  import java.util.zip.ZipEntry;
  import java.util.zip.ZipFile;
-@@ -189,7 +189,14 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
+@@ -195,7 +195,14 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
        }
  
        FileOutputStream fileStream = new FileOutputStream(file);
@@ -69,7 +69,7 @@ index 75d4d0937f1e39fe630b1318a4ad531de7fbd644..d0ae9a7c3b20de44cb202390cc0dfd4d
        mapArchiveStreams.put(file.getPath(), zipStream);
      }
      catch (IOException ex) {
-@@ -215,7 +222,9 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
+@@ -221,7 +228,9 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
        if (entry != null) {
          try (InputStream in = srcArchive.getInputStream(entry)) {
            ZipOutputStream out = mapArchiveStreams.get(file);
@@ -80,7 +80,7 @@ index 75d4d0937f1e39fe630b1318a4ad531de7fbd644..d0ae9a7c3b20de44cb202390cc0dfd4d
            InterpreterUtil.copyStream(in, out);
          }
        }
-@@ -236,7 +245,9 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
+@@ -242,7 +251,9 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
  
      try {
        ZipOutputStream out = mapArchiveStreams.get(file);
@@ -92,21 +92,21 @@ index 75d4d0937f1e39fe630b1318a4ad531de7fbd644..d0ae9a7c3b20de44cb202390cc0dfd4d
          out.write(content.getBytes(StandardCharsets.UTF_8));
        }
 diff --git a/src/org/jetbrains/java/decompiler/main/extern/IFernflowerPreferences.java b/src/org/jetbrains/java/decompiler/main/extern/IFernflowerPreferences.java
-index 5448e7900953da79b2bc01f99fd7e8f3080148e7..b509376a6dbc3780f7c14c631bf51b7fc24aa50d 100644
+index d81b7bd7d9012a5c5a77a6be8e89afc178ecbc03..057cdabc2d52ba09fa8570715f147fe904928ded 100644
 --- a/src/org/jetbrains/java/decompiler/main/extern/IFernflowerPreferences.java
 +++ b/src/org/jetbrains/java/decompiler/main/extern/IFernflowerPreferences.java
-@@ -35,6 +35,8 @@ public interface IFernflowerPreferences {
-   String IGNORE_INVALID_BYTECODE = "iib";
-   String VERIFY_ANONYMOUS_CLASSES = "vac";
+@@ -37,6 +37,8 @@ public interface IFernflowerPreferences {
+   String CONVERT_RECORD_PATTERN = "crp";
+   String CONVERT_PATTERN_SWITCH = "cps";
  
 +  String STANDARDIZE_FLOATING_POINT_NUMBERS = "sfn";
 +
    String LOG_LEVEL = "log";
    String MAX_PROCESSING_METHOD = "mpm";
    String RENAME_ENTITIES = "ren";
-@@ -81,6 +83,8 @@ public interface IFernflowerPreferences {
-     defaults.put(IGNORE_INVALID_BYTECODE, "0");
-     defaults.put(VERIFY_ANONYMOUS_CLASSES, "0");
+@@ -85,6 +87,8 @@ public interface IFernflowerPreferences {
+     defaults.put(CONVERT_RECORD_PATTERN, "0");
+     defaults.put(CONVERT_PATTERN_SWITCH, "0");
  
 +    defaults.put(STANDARDIZE_FLOATING_POINT_NUMBERS, "1");
 +
@@ -127,7 +127,7 @@ index fad1ddcfb9d2e43720b4cd3acaa165ba86e94892..cf03900654e427bd435ba6dc2d5a0cec
  
    void copyFile(String source, String path, String entryName);
 diff --git a/src/org/jetbrains/java/decompiler/main/rels/LambdaProcessor.java b/src/org/jetbrains/java/decompiler/main/rels/LambdaProcessor.java
-index 05e6e2d720aa5812ef12c4741eab06b8ea477e0f..f9c8c6a0334512699c545c881207194745427c96 100644
+index fc93bf581059a29369dc4a3d1904b10c4d1d91a4..14d1727359ed2a2ff7ba42bb163cfb5e3e347bd9 100644
 --- a/src/org/jetbrains/java/decompiler/main/rels/LambdaProcessor.java
 +++ b/src/org/jetbrains/java/decompiler/main/rels/LambdaProcessor.java
 @@ -19,6 +19,7 @@ import org.jetbrains.java.decompiler.util.InterpreterUtil;
@@ -213,10 +213,10 @@ index 868955437f5c05d8b011671089de24aa7d5ab8cc..277e792a2856334970bafe0661582a8c
                }
                else {
 diff --git a/src/org/jetbrains/java/decompiler/modules/decompiler/ExprProcessor.java b/src/org/jetbrains/java/decompiler/modules/decompiler/ExprProcessor.java
-index cf3ce3d5c4d304c8f1ee121a9781d3238f794b91..6783382a1c199ba33df1af3477d3cf5e13230b09 100644
+index c8da870087c8c73cf9d4426ce7e88ce837dc81d5..6405a4518533f30d3fea7640bfa628df27ee0854 100644
 --- a/src/org/jetbrains/java/decompiler/modules/decompiler/ExprProcessor.java
 +++ b/src/org/jetbrains/java/decompiler/modules/decompiler/ExprProcessor.java
-@@ -928,6 +928,7 @@ public class ExprProcessor implements CodeConstants {
+@@ -933,6 +933,7 @@ public class ExprProcessor {
      }
  
      TextBuffer buf = new TextBuffer();
@@ -535,10 +535,10 @@ index cc1f537e71af0748b7b97d7d8489198e2a677cc9..9b1b3de632a63bbba1f5f7a99d5f75bf
    // IMatchable implementation
    // *****************************************************************************
 diff --git a/src/org/jetbrains/java/decompiler/modules/decompiler/sforms/SSAConstructorSparseEx.java b/src/org/jetbrains/java/decompiler/modules/decompiler/sforms/SSAConstructorSparseEx.java
-index 3991c5131e1b49cd7ee25626aa64ad3999766ce5..70b053d4138127c772f72eca7a54a1b8b3098cbf 100644
+index f3e8633a2ded33d2528933e0b2c14c8143dda936..5a7fcb6b0619b57a81dc8f67f5f88412804969aa 100644
 --- a/src/org/jetbrains/java/decompiler/modules/decompiler/sforms/SSAConstructorSparseEx.java
 +++ b/src/org/jetbrains/java/decompiler/modules/decompiler/sforms/SSAConstructorSparseEx.java
-@@ -22,6 +22,7 @@ import org.jetbrains.java.decompiler.util.SFormsFastMapDirect;
+@@ -24,6 +24,7 @@ import org.jetbrains.java.decompiler.util.SFormsFastMapDirect;
  import java.util.HashMap;
  import java.util.HashSet;
  import java.util.List;
@@ -546,7 +546,7 @@ index 3991c5131e1b49cd7ee25626aa64ad3999766ce5..70b053d4138127c772f72eca7a54a1b8
  import java.util.Map.Entry;
  import java.util.Objects;
  
-@@ -57,7 +58,7 @@ public class SSAConstructorSparseEx {
+@@ -60,7 +61,7 @@ public class SSAConstructorSparseEx {
      // DotExporter.toDotFile(dgraph, new File("c:\\Temp\\gr12_my.dot"));
      // } catch(Exception ex) {ex.printStackTrace();}
  
@@ -556,10 +556,10 @@ index 3991c5131e1b49cd7ee25626aa64ad3999766ce5..70b053d4138127c772f72eca7a54a1b8
        setInit.add(i);
      }
 diff --git a/src/org/jetbrains/java/decompiler/modules/decompiler/sforms/SSAUConstructorSparseEx.java b/src/org/jetbrains/java/decompiler/modules/decompiler/sforms/SSAUConstructorSparseEx.java
-index 4d76ee298513f0989eadc2866d7a9d1f229612ef..8cd9f1de252412494f36a847167a9b74a7dd7625 100644
+index 77a0ac15feaf46d6ddb084e47c16f126745a7def..d14492ef74b0be5631eaf380af677da4344f8e3f 100644
 --- a/src/org/jetbrains/java/decompiler/modules/decompiler/sforms/SSAUConstructorSparseEx.java
 +++ b/src/org/jetbrains/java/decompiler/modules/decompiler/sforms/SSAUConstructorSparseEx.java
-@@ -68,7 +68,7 @@ public class SSAUConstructorSparseEx {
+@@ -71,7 +71,7 @@ public class SSAUConstructorSparseEx {
      FlattenStatementsHelper flatthelper = new FlattenStatementsHelper();
      DirectGraph dgraph = flatthelper.buildDirectGraph(root);
  
@@ -592,10 +592,10 @@ index 58f94462caa7a8212c3e9e36e343e2f4c55582f5..d355e63f8a3252bf58f0cdf18f42e673
  
      for (Statement st : set) {
 diff --git a/src/org/jetbrains/java/decompiler/modules/decompiler/stats/SwitchStatement.java b/src/org/jetbrains/java/decompiler/modules/decompiler/stats/SwitchStatement.java
-index 133d87f45ab3b057e78589a53529821e5a6a6dea..119949c8bd35082b95cbfde2b185aa2d23034224 100644
+index c56d003ed64f2bb4aa8c15af42d10e06966f1c73..782b4fb72a24dac2f59acb858ceccbbb29b14858 100644
 --- a/src/org/jetbrains/java/decompiler/modules/decompiler/stats/SwitchStatement.java
 +++ b/src/org/jetbrains/java/decompiler/modules/decompiler/stats/SwitchStatement.java
-@@ -46,7 +46,16 @@ public final class SwitchStatement extends Statement {
+@@ -53,7 +53,16 @@ public final class SwitchStatement extends Statement {
        regularSuccessors.remove(post);
      }
      defaultEdge = head.getSuccessorEdges(EdgeType.DIRECT_ALL).get(0);

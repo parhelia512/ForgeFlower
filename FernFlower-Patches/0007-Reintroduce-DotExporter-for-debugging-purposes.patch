@@ -25,10 +25,10 @@ index 327a6e64f06d7ef60dc1bb3139aab490a2f7c2df..7d41769adee0974a02e0ef5a0518f9f9
              List<Exprent> lst = exprent.getAllExprents(true);
              lst.add(exprent);
 diff --git a/src/org/jetbrains/java/decompiler/modules/decompiler/sforms/SSAConstructorSparseEx.java b/src/org/jetbrains/java/decompiler/modules/decompiler/sforms/SSAConstructorSparseEx.java
-index 70b053d4138127c772f72eca7a54a1b8b3098cbf..82e8870671180ade3be93bbb54920b0321a9912b 100644
+index 5a7fcb6b0619b57a81dc8f67f5f88412804969aa..b789b53d82f800131bccf702c5a53c6269efa6f5 100644
 --- a/src/org/jetbrains/java/decompiler/modules/decompiler/sforms/SSAConstructorSparseEx.java
 +++ b/src/org/jetbrains/java/decompiler/modules/decompiler/sforms/SSAConstructorSparseEx.java
-@@ -15,6 +15,7 @@ import org.jetbrains.java.decompiler.modules.decompiler.stats.Statement.Statemen
+@@ -17,6 +17,7 @@ import org.jetbrains.java.decompiler.modules.decompiler.stats.Statement.Statemen
  import org.jetbrains.java.decompiler.modules.decompiler.vars.VarVersionPair;
  import org.jetbrains.java.decompiler.struct.StructMethod;
  import org.jetbrains.java.decompiler.struct.gen.MethodDescriptor;
@@ -36,7 +36,7 @@ index 70b053d4138127c772f72eca7a54a1b8b3098cbf..82e8870671180ade3be93bbb54920b03
  import org.jetbrains.java.decompiler.util.FastSparseSetFactory;
  import org.jetbrains.java.decompiler.util.FastSparseSetFactory.FastSparseSet;
  import org.jetbrains.java.decompiler.util.SFormsFastMapDirect;
-@@ -54,9 +55,7 @@ public class SSAConstructorSparseEx {
+@@ -57,9 +58,7 @@ public class SSAConstructorSparseEx {
      FlattenStatementsHelper flatthelper = new FlattenStatementsHelper();
      DirectGraph dgraph = flatthelper.buildDirectGraph(root);
  
@@ -47,7 +47,7 @@ index 70b053d4138127c772f72eca7a54a1b8b3098cbf..82e8870671180ade3be93bbb54920b03
  
      List<Integer> setInit = new ArrayList<>();
      for (int i = 0; i < 64; i++) {
-@@ -69,20 +68,19 @@ public class SSAConstructorSparseEx {
+@@ -72,21 +71,20 @@ public class SSAConstructorSparseEx {
  
      setCatchMaps(root, dgraph, flatthelper);
  
@@ -55,6 +55,7 @@ index 70b053d4138127c772f72eca7a54a1b8b3098cbf..82e8870671180ade3be93bbb54920b03
      HashSet<String> updated = new HashSet<>();
      do {
        // System.out.println("~~~~~~~~~~~~~ \r\n"+root.toJava());
+       cancellationManager.checkCanceled();
 -      ssaStatements(dgraph, updated);
 +      ssaStatements(dgraph, updated, mt, itteration++);
        // System.out.println("~~~~~~~~~~~~~ \r\n"+root.toJava());
@@ -73,10 +74,10 @@ index 70b053d4138127c772f72eca7a54a1b8b3098cbf..82e8870671180ade3be93bbb54920b03
      for (DirectNode node : dgraph.nodes) {
  
 diff --git a/src/org/jetbrains/java/decompiler/modules/decompiler/sforms/SSAUConstructorSparseEx.java b/src/org/jetbrains/java/decompiler/modules/decompiler/sforms/SSAUConstructorSparseEx.java
-index 8cd9f1de252412494f36a847167a9b74a7dd7625..5e1e323a6e2043d776c513e800056be200ab2971 100644
+index d14492ef74b0be5631eaf380af677da4344f8e3f..725344008926731a64f9fd62df2976149a65ea37 100644
 --- a/src/org/jetbrains/java/decompiler/modules/decompiler/sforms/SSAUConstructorSparseEx.java
 +++ b/src/org/jetbrains/java/decompiler/modules/decompiler/sforms/SSAUConstructorSparseEx.java
-@@ -12,6 +12,7 @@ import org.jetbrains.java.decompiler.modules.decompiler.vars.VarVersionPair;
+@@ -14,6 +14,7 @@ import org.jetbrains.java.decompiler.modules.decompiler.vars.VarVersionPair;
  import org.jetbrains.java.decompiler.modules.decompiler.vars.VarVersionsGraph;
  import org.jetbrains.java.decompiler.struct.StructMethod;
  import org.jetbrains.java.decompiler.struct.gen.MethodDescriptor;
@@ -84,7 +85,7 @@ index 8cd9f1de252412494f36a847167a9b74a7dd7625..5e1e323a6e2043d776c513e800056be2
  import org.jetbrains.java.decompiler.util.FastSparseSetFactory;
  import org.jetbrains.java.decompiler.util.FastSparseSetFactory.FastSparseSet;
  import org.jetbrains.java.decompiler.util.SFormsFastMapDirect;
-@@ -68,6 +69,8 @@ public class SSAUConstructorSparseEx {
+@@ -71,6 +72,8 @@ public class SSAUConstructorSparseEx {
      FlattenStatementsHelper flatthelper = new FlattenStatementsHelper();
      DirectGraph dgraph = flatthelper.buildDirectGraph(root);
  
@@ -93,7 +94,7 @@ index 8cd9f1de252412494f36a847167a9b74a7dd7625..5e1e323a6e2043d776c513e800056be2
      List<Integer> setInit = new ArrayList<>();
      for (int i = 0; i < 64; i++) {
        setInit.add(i);
-@@ -78,25 +81,24 @@ public class SSAUConstructorSparseEx {
+@@ -81,27 +84,27 @@ public class SSAUConstructorSparseEx {
  
      setCatchMaps(root, dgraph, flatthelper);
  
@@ -107,6 +108,7 @@ index 8cd9f1de252412494f36a847167a9b74a7dd7625..5e1e323a6e2043d776c513e800056be2
        //			System.out.println("~~~~~~~~~~~~~ \r\n"+root.toJava());
 -      ssaStatements(dgraph, updated, false);
 +      ssaStatements(dgraph, updated, false, mt, itteration++);
+       cancellationManager.checkCanceled();
        //			System.out.println("~~~~~~~~~~~~~ \r\n"+root.toJava());
      }
      while (!updated.isEmpty());
@@ -120,11 +122,13 @@ index 8cd9f1de252412494f36a847167a9b74a7dd7625..5e1e323a6e2043d776c513e800056be2
  
 -  private void ssaStatements(DirectGraph dgraph, HashSet<String> updated, boolean calcLiveVars) {
 +  private void ssaStatements(DirectGraph dgraph, HashSet<String> updated, boolean calcLiveVars, StructMethod mt, int itteration) {
+     CancellationManager cancellationManager = DecompilerContext.getCancellationManager();
 +
 +    DotExporter.toDotFile(dgraph, mt, "ssauStatements_" + itteration);
- 
++
      for (DirectNode node : dgraph.nodes) {
  
+       updated.remove(node.id);
 diff --git a/src/org/jetbrains/java/decompiler/modules/decompiler/vars/VarVersionsProcessor.java b/src/org/jetbrains/java/decompiler/modules/decompiler/vars/VarVersionsProcessor.java
 index 472faf9ad843f4d4bafdc2cf7753b67d8c34bddc..d6a9c2a29c73d778eb383d718094b7548d14d2f3 100644
 --- a/src/org/jetbrains/java/decompiler/modules/decompiler/vars/VarVersionsProcessor.java

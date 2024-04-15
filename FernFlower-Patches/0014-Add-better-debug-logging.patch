@@ -5,10 +5,10 @@ Subject: [PATCH] Add better debug logging
 
 
 diff --git a/src/org/jetbrains/java/decompiler/main/ClassWriter.java b/src/org/jetbrains/java/decompiler/main/ClassWriter.java
-index aa990406ef8d91838aa2d928bdfb183fe9e19333..410a83345e5e145962137536b95ca4f22185d678 100644
+index 6480dcc089dcd18246448c3144db7c35ab4017ba..e42a1be0e330b022e1f5ded74e3d98353a21cc05 100644
 --- a/src/org/jetbrains/java/decompiler/main/ClassWriter.java
 +++ b/src/org/jetbrains/java/decompiler/main/ClassWriter.java
-@@ -824,7 +824,7 @@ public class ClassWriter {
+@@ -828,7 +828,7 @@ public class ClassWriter {
              tracer.addTracer(codeTracer);
            }
            catch (Throwable t) {
@@ -18,11 +18,11 @@ index aa990406ef8d91838aa2d928bdfb183fe9e19333..410a83345e5e145962137536b95ca4f2
              methodWrapper.decompiledWithErrors = true;
            }
 diff --git a/src/org/jetbrains/java/decompiler/main/rels/ClassWrapper.java b/src/org/jetbrains/java/decompiler/main/rels/ClassWrapper.java
-index 964bff5a00b35969fa08e48ca355801fe2882ce8..0c53385b28507ef4fb0ffb2ff6c58298dc9a5bde 100644
+index 33785c458ebdf7c4da66c9e8da0fb8690e64ea5b..4bf036a062bf94937e97a8970010feb6365f8c8f 100644
 --- a/src/org/jetbrains/java/decompiler/main/rels/ClassWrapper.java
 +++ b/src/org/jetbrains/java/decompiler/main/rels/ClassWrapper.java
-@@ -110,7 +110,7 @@ public class ClassWrapper {
-         }
+@@ -102,7 +102,7 @@ public class ClassWrapper {
+         throw e;
        }
        catch (Throwable t) {
 -        String message = "Method " + mt.getName() + " " + mt.getDescriptor() + " couldn't be decompiled.";
@@ -59,7 +59,7 @@ index 85fc95d87bd7e672613f6c1beb75b2d56d1d759f..2b6448c01968ddb6bde275304e007383
              classes.put(cl.qualifiedName, cl);
              unit.addClass(cl, name);
 diff --git a/src/org/jetbrains/java/decompiler/struct/consts/ConstantPool.java b/src/org/jetbrains/java/decompiler/struct/consts/ConstantPool.java
-index 6da1e0d2c84e9c2c102bf0ffafabddeee2dcadd0..a824d326da2bc6a2c864d2da75af11545b8cf71e 100644
+index ffb1d9b8acf5c0b0e0738c74ce054a30fa9ac249..86c642d150845e10d3881b3281ee610e58afb63a 100644
 --- a/src/org/jetbrains/java/decompiler/struct/consts/ConstantPool.java
 +++ b/src/org/jetbrains/java/decompiler/struct/consts/ConstantPool.java
 @@ -94,7 +94,8 @@ public class ConstantPool implements NewClassNameBuilder {

@@ -65,7 +65,7 @@ index ec2d6931c9426913680fd2ec180483389d96ac4b..cb15c8bc3d924e99c0bf9db350e8fe10
 \ No newline at end of file
 +}
 diff --git a/src/org/jetbrains/java/decompiler/modules/decompiler/exps/InvocationExprent.java b/src/org/jetbrains/java/decompiler/modules/decompiler/exps/InvocationExprent.java
-index d51f0eba4a80cad4159a5135b2d87b8d405c0ed9..f23110233f59728ab4b700bfc0fa2b625f0d7071 100644
+index 1ac9d83fd5e884c010b6361ea5e6053e6380b534..ebd4577eb6954512fbfd91f998d1d2296b5579c3 100644
 --- a/src/org/jetbrains/java/decompiler/modules/decompiler/exps/InvocationExprent.java
 +++ b/src/org/jetbrains/java/decompiler/modules/decompiler/exps/InvocationExprent.java
 @@ -399,6 +399,7 @@ public class InvocationExprent extends Exprent {
@@ -117,7 +117,7 @@ index d51f0eba4a80cad4159a5135b2d87b8d405c0ed9..f23110233f59728ab4b700bfc0fa2b62
  
      boolean firstParameter = true;
      for (int i = start; i < this.parameters.size(); i++) {
-@@ -665,27 +682,98 @@ public class InvocationExprent extends Exprent {
+@@ -669,27 +686,98 @@ public class InvocationExprent extends Exprent {
  
    private List<StructMethod> getMatchedDescriptors() {
      List<StructMethod> matches = new ArrayList<>();
@@ -227,7 +227,7 @@ index d51f0eba4a80cad4159a5135b2d87b8d405c0ed9..f23110233f59728ab4b700bfc0fa2b62
      StructClass cl = DecompilerContext.getStructContext().getClass(className);
      if (cl == null || matches.size() == 1) {
 diff --git a/src/org/jetbrains/java/decompiler/struct/StructClass.java b/src/org/jetbrains/java/decompiler/struct/StructClass.java
-index bead2d172e27075e63f6977562988041a96a4371..4115efedd42ef96e61425d05dc83153e20ebf9a2 100644
+index 81ecea2c35720616709ac51361ef300852db33c3..596261196cb6e027aec670eeebbc084f69c9e03e 100644
 --- a/src/org/jetbrains/java/decompiler/struct/StructClass.java
 +++ b/src/org/jetbrains/java/decompiler/struct/StructClass.java
 @@ -159,6 +159,35 @@ public class StructClass extends StructMember {

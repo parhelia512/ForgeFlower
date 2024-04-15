@@ -5,10 +5,10 @@ Subject: [PATCH] Improve inferred generic types
 
 
 diff --git a/src/org/jetbrains/java/decompiler/main/extern/IFernflowerPreferences.java b/src/org/jetbrains/java/decompiler/main/extern/IFernflowerPreferences.java
-index 53349248a038cea0ef82cdc2138ca93e722d1d06..a25566f0e6ba9a4f67c6412fc379874ffca92c21 100644
+index e4e726367d85a6e6af80008d14ad362d7ba61ad3..36c3a07081fa04ed611100a2f489cc608f5ca849 100644
 --- a/src/org/jetbrains/java/decompiler/main/extern/IFernflowerPreferences.java
 +++ b/src/org/jetbrains/java/decompiler/main/extern/IFernflowerPreferences.java
-@@ -38,6 +38,7 @@ public interface IFernflowerPreferences {
+@@ -40,6 +40,7 @@ public interface IFernflowerPreferences {
    String STANDARDIZE_FLOATING_POINT_NUMBERS = "sfn";
    String INCLUDE_ENTIRE_CLASSPATH = "iec";
    String QUALIFY_INNER_CLASSES = "qin";
@@ -16,7 +16,7 @@ index 53349248a038cea0ef82cdc2138ca93e722d1d06..a25566f0e6ba9a4f67c6412fc379874f
  
    String LOG_LEVEL = "log";
    String MAX_PROCESSING_METHOD = "mpm";
-@@ -93,6 +94,7 @@ public interface IFernflowerPreferences {
+@@ -97,6 +98,7 @@ public interface IFernflowerPreferences {
      defaults.put(STANDARDIZE_FLOATING_POINT_NUMBERS, "1");
      defaults.put(INCLUDE_ENTIRE_CLASSPATH, "0");
      defaults.put(QUALIFY_INNER_CLASSES, "1");
@@ -181,7 +181,7 @@ index e2f36231b51e547b4aae610c8450d83bc0952e44..0509360d7637650341acca72e72e4902
    // IMatchable implementation
    // *****************************************************************************
 diff --git a/src/org/jetbrains/java/decompiler/modules/decompiler/exps/FieldExprent.java b/src/org/jetbrains/java/decompiler/modules/decompiler/exps/FieldExprent.java
-index e98b53eb94ed7f1f5c936887be8418e6637b2b43..3099a4611a01341d3a923d84723303ed0e76741b 100644
+index ca53ffe55c0a97d9d38f5c770f7e648feb7f1f97..38cbd85c5674e2b96218bad3585f40691ad7f7eb 100644
 --- a/src/org/jetbrains/java/decompiler/modules/decompiler/exps/FieldExprent.java
 +++ b/src/org/jetbrains/java/decompiler/modules/decompiler/exps/FieldExprent.java
 @@ -14,6 +14,7 @@ import org.jetbrains.java.decompiler.struct.attr.StructLocalVariableTableAttribu
@@ -265,7 +265,7 @@ index cb15c8bc3d924e99c0bf9db350e8fe102bc5f97a..e74a3c65c126f3378a4551bc96dd82af
    public void getBytecodeRange(BitSet values) {
      measureBytecode(values, lstOperands);
 diff --git a/src/org/jetbrains/java/decompiler/modules/decompiler/exps/InvocationExprent.java b/src/org/jetbrains/java/decompiler/modules/decompiler/exps/InvocationExprent.java
-index 165a152ea68e6b6580a9064bd1f4a4d39677f972..1661a1deb02a4caa5238b5342e5d6043e4e37b7b 100644
+index b261c02238a2cb9b684aacde75dc7fe286040534..0985f80144e92518cf404297dfe7c50b41455a08 100644
 --- a/src/org/jetbrains/java/decompiler/modules/decompiler/exps/InvocationExprent.java
 +++ b/src/org/jetbrains/java/decompiler/modules/decompiler/exps/InvocationExprent.java
 @@ -32,6 +32,7 @@ import org.jetbrains.java.decompiler.util.TextUtil;
@@ -799,7 +799,7 @@ index 165a152ea68e6b6580a9064bd1f4a4d39677f972..1661a1deb02a4caa5238b5342e5d6043
      return buf;
    }
  
-@@ -869,6 +1175,162 @@ public class InvocationExprent extends Exprent {
+@@ -873,6 +1179,162 @@ public class InvocationExprent extends Exprent {
      return ambiguous;
    }
  
@@ -962,7 +962,7 @@ index 165a152ea68e6b6580a9064bd1f4a4d39677f972..1661a1deb02a4caa5238b5342e5d6043
    @Override
    public void replaceExprent(Exprent oldExpr, Exprent newExpr) {
      if (oldExpr == instance) {
-@@ -980,6 +1442,19 @@ public class InvocationExprent extends Exprent {
+@@ -984,6 +1446,19 @@ public class InvocationExprent extends Exprent {
      return isSyntheticNullCheck;
    }
  
@@ -1442,10 +1442,10 @@ index 049bf247002da65a90392f054ad2c57a04ebae81..72205fbd81840cda91ca303d15758df4
 +  }
  }
 diff --git a/src/org/jetbrains/java/decompiler/modules/decompiler/exps/VarExprent.java b/src/org/jetbrains/java/decompiler/modules/decompiler/exps/VarExprent.java
-index bbe17e0b2c4dcb7214e0c94cc34156e5c9f233a0..e7bb1eb49b73102af8f967b7d5d3dbed5a1fc86a 100644
+index 97255efeef1f0ee24a0287c3523528d797748854..5cdfd00930aaed8a636a9303e1984ebbc39aeecc 100644
 --- a/src/org/jetbrains/java/decompiler/modules/decompiler/exps/VarExprent.java
 +++ b/src/org/jetbrains/java/decompiler/modules/decompiler/exps/VarExprent.java
-@@ -13,6 +13,7 @@ import org.jetbrains.java.decompiler.modules.decompiler.stats.Statement;
+@@ -14,6 +14,7 @@ import org.jetbrains.java.decompiler.modules.decompiler.stats.Statement;
  import org.jetbrains.java.decompiler.modules.decompiler.vars.CheckTypesResult;
  import org.jetbrains.java.decompiler.modules.decompiler.vars.VarProcessor;
  import org.jetbrains.java.decompiler.modules.decompiler.vars.VarVersionPair;
@@ -1453,7 +1453,7 @@ index bbe17e0b2c4dcb7214e0c94cc34156e5c9f233a0..e7bb1eb49b73102af8f967b7d5d3dbed
  import org.jetbrains.java.decompiler.struct.attr.StructGeneralAttribute;
  import org.jetbrains.java.decompiler.struct.attr.StructLocalVariableTableAttribute;
  import org.jetbrains.java.decompiler.struct.attr.StructLocalVariableTableAttribute.LocalVariable;
-@@ -235,7 +236,21 @@ public class VarExprent extends Exprent {
+@@ -250,7 +251,21 @@ public class VarExprent extends Exprent {
  
      VarType vt = null;
      if (processor != null) {
@@ -1477,7 +1477,7 @@ index bbe17e0b2c4dcb7214e0c94cc34156e5c9f233a0..e7bb1eb49b73102af8f967b7d5d3dbed
  
      if (vt == null || (varType != null && varType.getType() != CodeConstants.TYPE_UNKNOWN)) {
 diff --git a/src/org/jetbrains/java/decompiler/struct/StructClass.java b/src/org/jetbrains/java/decompiler/struct/StructClass.java
-index 4115efedd42ef96e61425d05dc83153e20ebf9a2..969d6feb0133be481210b4e24a3db72637d0ccdd 100644
+index 596261196cb6e027aec670eeebbc084f69c9e03e..17c115ea09b4d4fa78d1c0a224c01f9492ae68c3 100644
 --- a/src/org/jetbrains/java/decompiler/struct/StructClass.java
 +++ b/src/org/jetbrains/java/decompiler/struct/StructClass.java
 @@ -21,6 +21,7 @@ import org.jetbrains.java.decompiler.util.InterpreterUtil;
@@ -1488,7 +1488,7 @@ index 4115efedd42ef96e61425d05dc83153e20ebf9a2..969d6feb0133be481210b4e24a3db726
  import java.util.Collections;
  import java.util.HashMap;
  import java.util.HashSet;
-@@ -396,4 +397,28 @@ public class StructClass extends StructMember {
+@@ -408,4 +409,28 @@ public class StructClass extends StructMember {
      this.genericHiarachy = ret.isEmpty() ? Collections.emptyMap() : ret;
      return this.genericHiarachy;
    }

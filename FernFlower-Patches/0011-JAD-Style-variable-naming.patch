@@ -5,10 +5,10 @@ Subject: [PATCH] JAD Style variable naming
 
 
 diff --git a/src/org/jetbrains/java/decompiler/main/ClassWriter.java b/src/org/jetbrains/java/decompiler/main/ClassWriter.java
-index 31236841f1b4bf4f452f30d6b95f21fcc99ec5b9..aa990406ef8d91838aa2d928bdfb183fe9e19333 100644
+index a15f1f8e0c4f8e34ddc6450844e450157791e06d..6480dcc089dcd18246448c3144db7c35ab4017ba 100644
 --- a/src/org/jetbrains/java/decompiler/main/ClassWriter.java
 +++ b/src/org/jetbrains/java/decompiler/main/ClassWriter.java
-@@ -117,15 +117,20 @@ public class ClassWriter {
+@@ -118,15 +118,20 @@ public class ClassWriter {
                  buffer.append(", ");
                }
  
@@ -33,7 +33,7 @@ index 31236841f1b4bf4f452f30d6b95f21fcc99ec5b9..aa990406ef8d91838aa2d928bdfb183f
  
                firstParameter = false;
              }
-@@ -747,7 +752,11 @@ public class ClassWriter {
+@@ -751,7 +756,11 @@ public class ClassWriter {
              buffer.append(' ');
  
              String parameterName = methodWrapper.varproc.getVarName(pair);
@@ -46,7 +46,7 @@ index 31236841f1b4bf4f452f30d6b95f21fcc99ec5b9..aa990406ef8d91838aa2d928bdfb183f
  
              paramCount++;
            }
-@@ -919,7 +928,11 @@ public class ClassWriter {
+@@ -923,7 +932,11 @@ public class ClassWriter {
              buffer.append(" ");
  
              String parameterName = methodWrapper.varproc.getVarName(new VarVersionPair(index, 0));
@@ -60,10 +60,10 @@ index 31236841f1b4bf4f452f30d6b95f21fcc99ec5b9..aa990406ef8d91838aa2d928bdfb183f
              firstParameter = false;
            }
 diff --git a/src/org/jetbrains/java/decompiler/main/ClassesProcessor.java b/src/org/jetbrains/java/decompiler/main/ClassesProcessor.java
-index 8173ecd04da97e5e9a8f5f9a2e309726439697e0..3398f884985021a324fc5ae6ac6a461f8e5b2f33 100644
+index eadb57d1766d7ddbced6a18da21369375cdab1fe..df5ffa3abe8a4a8e2dc42173bf1c32fe6ca8335e 100644
 --- a/src/org/jetbrains/java/decompiler/main/ClassesProcessor.java
 +++ b/src/org/jetbrains/java/decompiler/main/ClassesProcessor.java
-@@ -146,6 +146,7 @@ public class ClassesProcessor implements CodeConstants {
+@@ -146,6 +146,7 @@ public class ClassesProcessor {
          node.access = cl.getAccessFlags();
          mapRootClasses.put(cl.qualifiedName, node);
        }
@@ -71,7 +71,7 @@ index 8173ecd04da97e5e9a8f5f9a2e309726439697e0..3398f884985021a324fc5ae6ac6a461f
      }
  
      // set non-sealed if class extends or implements a sealed class and is not final or sealed itself
-@@ -256,6 +257,25 @@ public class ClassesProcessor implements CodeConstants {
+@@ -256,6 +257,25 @@ public class ClassesProcessor {
      }
    }
  
@@ -97,7 +97,7 @@ index 8173ecd04da97e5e9a8f5f9a2e309726439697e0..3398f884985021a324fc5ae6ac6a461f
    private static boolean isAnonymous(StructClass cl, StructClass enclosingCl) {
      // checking super class and interfaces
      int[] interfaces = cl.getInterfaces();
-@@ -441,6 +461,7 @@ public class ClassesProcessor implements CodeConstants {
+@@ -441,6 +461,7 @@ public class ClassesProcessor {
    private static void destroyWrappers(ClassNode node) {
      node.wrapper = null;
      node.classStruct.releaseResources();
@@ -105,7 +105,7 @@ index 8173ecd04da97e5e9a8f5f9a2e309726439697e0..3398f884985021a324fc5ae6ac6a461f
  
      for (ClassNode nd : node.nested) {
        destroyWrappers(nd);
-@@ -563,4 +584,4 @@ public class ClassesProcessor implements CodeConstants {
+@@ -563,4 +584,4 @@ public class ClassesProcessor {
        public boolean is_content_method_static;
      }
    }
@@ -113,10 +113,10 @@ index 8173ecd04da97e5e9a8f5f9a2e309726439697e0..3398f884985021a324fc5ae6ac6a461f
 \ No newline at end of file
 +}
 diff --git a/src/org/jetbrains/java/decompiler/main/DecompilerContext.java b/src/org/jetbrains/java/decompiler/main/DecompilerContext.java
-index 654d0ddf34821ce4ea800cd5421f6268e2ca3236..bb7b5b4e4a590219939a8f7e883b9c259c1adf73 100644
+index e71edd78b1de87bc40e882d775b401be724dff09..3780a177aba000df203ae1252f1da4773bd127c9 100644
 --- a/src/org/jetbrains/java/decompiler/main/DecompilerContext.java
 +++ b/src/org/jetbrains/java/decompiler/main/DecompilerContext.java
-@@ -7,6 +7,7 @@ import org.jetbrains.java.decompiler.main.collectors.ImportCollector;
+@@ -9,6 +9,7 @@ import org.jetbrains.java.decompiler.main.collectors.ImportCollector;
  import org.jetbrains.java.decompiler.main.extern.IFernflowerLogger;
  import org.jetbrains.java.decompiler.main.extern.IFernflowerPreferences;
  import org.jetbrains.java.decompiler.modules.decompiler.vars.VarProcessor;
@@ -124,40 +124,53 @@ index 654d0ddf34821ce4ea800cd5421f6268e2ca3236..bb7b5b4e4a590219939a8f7e883b9c25
  import org.jetbrains.java.decompiler.modules.renamer.PoolInterceptor;
  import org.jetbrains.java.decompiler.struct.StructContext;
  
-@@ -20,12 +21,14 @@ public class DecompilerContext {
+@@ -22,6 +23,7 @@ public class DecompilerContext {
    public static final String CURRENT_METHOD_WRAPPER = "CURRENT_METHOD_WRAPPER";
    public static final String CURRENT_VAR_PROCESSOR = "CURRENT_VAR_PROCESSOR";
    public static final String IN_CLASS_TYPE_PARAMS = "IN_CLASS_TYPE_PARAMS";
 +  public static final String RENAMER_FACTORY = "RENAMER_FACTORY";
  
+   @NotNull
    private final Map<String, Object> properties;
-   private final IFernflowerLogger logger;
-   private final StructContext structContext;
-   private final ClassesProcessor classProcessor;
+@@ -35,25 +37,20 @@ public class DecompilerContext {
    private final PoolInterceptor poolInterceptor;
+   @NotNull
+   private final CancellationManager cancellationManager;
++  @NotNull
 +  private final IVariableNamingFactory renamerFactory;
    private ImportCollector importCollector;
    private VarProcessor varProcessor;
    private CounterContainer counterContainer;
-@@ -35,7 +38,8 @@ public class DecompilerContext {
-                            IFernflowerLogger logger,
-                            StructContext structContext,
-                            ClassesProcessor classProcessor,
--                           PoolInterceptor interceptor) {
-+                           PoolInterceptor interceptor,
-+                           IVariableNamingFactory renamerFactory) {
+   private BytecodeSourceMapper bytecodeSourceMapper;
+ 
+-  public DecompilerContext(@NotNull Map<String, Object> properties,
+-                           @NotNull IFernflowerLogger logger,
+-                           @NotNull StructContext structContext,
+-                           @NotNull ClassesProcessor classProcessor,
+-                           @Nullable PoolInterceptor interceptor) {
+-    this(properties, logger, structContext, classProcessor, interceptor, null);
+-  }
+-
+   public DecompilerContext(@NotNull Map<String, Object> properties,
+                            @NotNull IFernflowerLogger logger,
+                            @NotNull StructContext structContext,
+                            @NotNull ClassesProcessor classProcessor,
+                            @Nullable PoolInterceptor interceptor,
+-                           @Nullable CancellationManager cancellationManager) {
++                           @Nullable CancellationManager cancellationManager,
++                           @NotNull IVariableNamingFactory renamerFactory) {
      Objects.requireNonNull(properties);
      Objects.requireNonNull(logger);
      Objects.requireNonNull(structContext);
-@@ -46,6 +50,7 @@ public class DecompilerContext {
+@@ -69,6 +66,7 @@ public class DecompilerContext {
      this.structContext = structContext;
      this.classProcessor = classProcessor;
      this.poolInterceptor = interceptor;
 +    this.renamerFactory = renamerFactory;
      this.counterContainer = new CounterContainer();
+     this.cancellationManager = cancellationManager;
    }
- 
-@@ -113,6 +118,10 @@ public class DecompilerContext {
+@@ -141,6 +139,10 @@ public class DecompilerContext {
      return getCurrentContext().poolInterceptor;
    }
  
@@ -169,10 +182,10 @@ index 654d0ddf34821ce4ea800cd5421f6268e2ca3236..bb7b5b4e4a590219939a8f7e883b9c25
      return getCurrentContext().importCollector;
    }
 diff --git a/src/org/jetbrains/java/decompiler/main/Fernflower.java b/src/org/jetbrains/java/decompiler/main/Fernflower.java
-index f8c413c7b7302b201a739310677d0103e2878d3e..aa8b1132b84fc44bf6decd96ebaf5c021c185ac1 100644
+index 2131734731949423555136fe2c23657dcbb74b4e..39f27f9e24c80b7ad52a4b472771fd01a515531c 100644
 --- a/src/org/jetbrains/java/decompiler/main/Fernflower.java
 +++ b/src/org/jetbrains/java/decompiler/main/Fernflower.java
-@@ -10,6 +10,7 @@ import org.jetbrains.java.decompiler.struct.IDecompiledData;
+@@ -11,6 +11,7 @@ import org.jetbrains.java.decompiler.struct.IDecompiledData;
  import org.jetbrains.java.decompiler.struct.StructClass;
  import org.jetbrains.java.decompiler.struct.StructContext;
  import org.jetbrains.java.decompiler.struct.lazy.LazyLoader;
@@ -180,11 +193,11 @@ index f8c413c7b7302b201a739310677d0103e2878d3e..aa8b1132b84fc44bf6decd96ebaf5c02
  import org.jetbrains.java.decompiler.util.TextBuffer;
  import org.jetbrains.java.decompiler.util.ClasspathScanner;
  
-@@ -52,7 +53,25 @@ public class Fernflower implements IDecompiledData {
+@@ -57,7 +58,25 @@ public class Fernflower implements IDecompiledData {
        converter = null;
      }
  
--    DecompilerContext context = new DecompilerContext(properties, logger, structContext, classProcessor, interceptor);
+-    DecompilerContext context = new DecompilerContext(properties, logger, structContext, classProcessor, interceptor, cancellationManager);
 +    IVariableNamingFactory renamerFactory = null;
 +    String factoryClazz = (String) properties.get(DecompilerContext.RENAMER_FACTORY);
 +    if (factoryClazz != null) {
@@ -203,7 +216,7 @@ index f8c413c7b7302b201a739310677d0103e2878d3e..aa8b1132b84fc44bf6decd96ebaf5c02
 +      }
 +    }
 +
-+    DecompilerContext context = new DecompilerContext(properties, logger, structContext, classProcessor, interceptor, renamerFactory);
++    DecompilerContext context = new DecompilerContext(properties, logger, structContext, classProcessor, interceptor, cancellationManager, renamerFactory);
      DecompilerContext.setCurrentContext(context);
  
      String vendor = System.getProperty("java.vendor", "missing vendor");
@@ -253,10 +266,10 @@ index 0000000000000000000000000000000000000000..872ec764f11131d384e59f08c4aac955
 +  }
 +}
 diff --git a/src/org/jetbrains/java/decompiler/main/extern/IFernflowerPreferences.java b/src/org/jetbrains/java/decompiler/main/extern/IFernflowerPreferences.java
-index 79108dd8772dc9444d66e6ba0cdd7f56ca382fbd..3cbbb19b4dd705f67d0b2450996f704a9e293168 100644
+index c8e52fae331f2eba5f1b1a189368f8c838556cbb..7f73a4662adfdf5a7ce1f9b29f0aaa00b0bd3cac 100644
 --- a/src/org/jetbrains/java/decompiler/main/extern/IFernflowerPreferences.java
 +++ b/src/org/jetbrains/java/decompiler/main/extern/IFernflowerPreferences.java
-@@ -52,6 +52,9 @@ public interface IFernflowerPreferences {
+@@ -54,6 +54,9 @@ public interface IFernflowerPreferences {
    String LINE_SEPARATOR_WIN = "\r\n";
    String LINE_SEPARATOR_UNX = "\n";
  
@@ -266,7 +279,7 @@ index 79108dd8772dc9444d66e6ba0cdd7f56ca382fbd..3cbbb19b4dd705f67d0b2450996f704a
    Map<String, Object> DEFAULTS = getDefaults();
  
    static Map<String, Object> getDefaults() {
-@@ -95,7 +98,9 @@ public interface IFernflowerPreferences {
+@@ -99,7 +102,9 @@ public interface IFernflowerPreferences {
      defaults.put(BANNER, "");
      defaults.put(UNIT_TEST_MODE, "0");
      defaults.put(DUMP_ORIGINAL_LINES, "0");
@@ -350,10 +363,10 @@ index 0000000000000000000000000000000000000000..fc1d7d67864ab12e894fcdf0ed8e1297
 +  public IVariableNameProvider createFactory(StructMethod structMethod);
 +}
 diff --git a/src/org/jetbrains/java/decompiler/main/rels/ClassWrapper.java b/src/org/jetbrains/java/decompiler/main/rels/ClassWrapper.java
-index c1126a2b7559e2f8a69a54ee0b7db2ceda3d9776..964bff5a00b35969fa08e48ca355801fe2882ce8 100644
+index e121730b949be319f19d497ea927bc3de5ee7cf1..33785c458ebdf7c4da66c9e8da0fb8690e64ea5b 100644
 --- a/src/org/jetbrains/java/decompiler/main/rels/ClassWrapper.java
 +++ b/src/org/jetbrains/java/decompiler/main/rels/ClassWrapper.java
-@@ -158,7 +158,8 @@ public class ClassWrapper {
+@@ -150,7 +150,8 @@ public class ClassWrapper {
    }
  
    private static void applyDebugInfo(StructMethod mt, VarProcessor varProc, MethodWrapper methodWrapper) {

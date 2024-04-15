@@ -36,20 +36,19 @@ index 1518aae1cf006454e11471b52c54267991b65596..fe68098cb9bc2ecfb002438a7b1ed974
            }
          }
 diff --git a/src/org/jetbrains/java/decompiler/modules/decompiler/exps/VarExprent.java b/src/org/jetbrains/java/decompiler/modules/decompiler/exps/VarExprent.java
-index 8807a1534a587af70c2779f2bf8f7cdf3ec9d7f2..0dd8768a10a4edb5901d3112145df58c871b68c9 100644
+index fb550d7e70d5d53a13c69a35a0bb7a9ce2a8182b..26571d9dcb7bab08c93a463b02d9640143719730 100644
 --- a/src/org/jetbrains/java/decompiler/modules/decompiler/exps/VarExprent.java
 +++ b/src/org/jetbrains/java/decompiler/modules/decompiler/exps/VarExprent.java
-@@ -151,7 +151,8 @@ public class VarExprent extends Exprent {
+@@ -161,7 +161,7 @@ public class VarExprent extends Exprent {
    }
    */
  
--  private void appendDefinitionType(TextBuffer buffer) {
-+
+-  void appendDefinitionType(TextBuffer buffer) {
 +  public VarType getDefinitionType() {
      if (DecompilerContext.getOption(IFernflowerPreferences.USE_DEBUG_VAR_NAMES)) {
  
        if (lvt != null) {
-@@ -159,13 +160,11 @@ public class VarExprent extends Exprent {
+@@ -169,13 +169,11 @@ public class VarExprent extends Exprent {
            if (lvt.getSignature() != null) {
              GenericFieldDescriptor descriptor = GenericMain.parseFieldSignature(lvt.getSignature());
              if (descriptor != null) {
@@ -65,7 +64,7 @@ index 8807a1534a587af70c2779f2bf8f7cdf3ec9d7f2..0dd8768a10a4edb5901d3112145df58c
        }
  
        MethodWrapper method = (MethodWrapper)DecompilerContext.getProperty(DecompilerContext.CURRENT_METHOD_WRAPPER);
-@@ -185,8 +184,7 @@ public class VarExprent extends Exprent {
+@@ -195,8 +193,7 @@ public class VarExprent extends Exprent {
                if (signature != null) {
                  GenericFieldDescriptor descriptor = GenericMain.parseFieldSignature(signature);
                  if (descriptor != null) {
@@ -75,7 +74,7 @@ index 8807a1534a587af70c2779f2bf8f7cdf3ec9d7f2..0dd8768a10a4edb5901d3112145df58c
                  }
                }
              }
-@@ -197,15 +195,17 @@ public class VarExprent extends Exprent {
+@@ -207,15 +204,17 @@ public class VarExprent extends Exprent {
            if (attr != null) {
              String descriptor = attr.getDescriptor(originalIndex, visibleOffset);
              if (descriptor != null) {
@@ -91,7 +90,7 @@ index 8807a1534a587af70c2779f2bf8f7cdf3ec9d7f2..0dd8768a10a4edb5901d3112145df58c
 +  }
  
 -    buffer.append(ExprProcessor.getCastTypeName(getVarType(), Collections.emptyList()));
-+  private void appendDefinitionType(TextBuffer buffer) {
++  void appendDefinitionType(TextBuffer buffer) {
 +    buffer.append(ExprProcessor.getCastTypeName(getDefinitionType(), Collections.emptyList()));
    }
  

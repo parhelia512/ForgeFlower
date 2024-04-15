@@ -5,11 +5,11 @@ Subject: [PATCH] Fix signature polymorphic methods
 
 
 diff --git a/src/org/jetbrains/java/decompiler/main/rels/MethodProcessorRunnable.java b/src/org/jetbrains/java/decompiler/main/rels/MethodProcessorRunnable.java
-index f66e835ab7cd7b03ada0a433b1edf357f5d6efcd..c825f65f521ba8c1123217aa22bc731bc91b13e7 100644
+index 702411fc011cff277c77d41b64ff47c1bc46843a..f72c2928e90b7d230b21d80432f050e87c261616 100644
 --- a/src/org/jetbrains/java/decompiler/main/rels/MethodProcessorRunnable.java
 +++ b/src/org/jetbrains/java/decompiler/main/rels/MethodProcessorRunnable.java
-@@ -193,6 +193,8 @@ public class MethodProcessorRunnable implements Runnable {
-       stackProc.simplifyStackVars(root, mt, cl);
+@@ -205,6 +205,8 @@ public class MethodProcessorRunnable implements Runnable {
+       StackVarsProcessor.simplifyStackVars(root, mt, cl);
        varProc.setVarVersions(root);
  
 +      MethodHandleDescriptorHelper.changeMethodHandleDescriptorsStats(root);

@@ -5,10 +5,10 @@ Subject: [PATCH] Simple lambda syntax support, --isl=0 to disable.
 
 
 diff --git a/src/org/jetbrains/java/decompiler/main/ClassWriter.java b/src/org/jetbrains/java/decompiler/main/ClassWriter.java
-index 6f2f8419d41a240c6d1428be0b0ca9258f058127..d9c338ff9189953329a0812250fb494656eb749a 100644
+index a6f17b9ad1a24d6cb8c39385737446565b092567..fbdda29ce339b9f6a5ad89878260c55e99ec1e61 100644
 --- a/src/org/jetbrains/java/decompiler/main/ClassWriter.java
 +++ b/src/org/jetbrains/java/decompiler/main/ClassWriter.java
-@@ -10,14 +10,19 @@ import org.jetbrains.java.decompiler.main.rels.ClassWrapper;
+@@ -11,14 +11,19 @@ import org.jetbrains.java.decompiler.main.rels.ClassWrapper;
  import org.jetbrains.java.decompiler.main.rels.MethodWrapper;
  import org.jetbrains.java.decompiler.modules.decompiler.ExprProcessor;
  import org.jetbrains.java.decompiler.modules.decompiler.exps.AnnotationExprent;
@@ -28,7 +28,7 @@ index 6f2f8419d41a240c6d1428be0b0ca9258f058127..d9c338ff9189953329a0812250fb4946
  import org.jetbrains.java.decompiler.modules.decompiler.vars.VarVersionPair;
  import org.jetbrains.java.decompiler.modules.renamer.PoolInterceptor;
  import org.jetbrains.java.decompiler.struct.*;
-@@ -84,7 +89,15 @@ public class ClassWriter {
+@@ -85,7 +90,15 @@ public class ClassWriter {
        if (node.lambdaInformation.is_method_reference) {
          if (!node.lambdaInformation.is_content_method_static && method_object != null) {
            // reference to a virtual method
@@ -45,7 +45,7 @@ index 6f2f8419d41a240c6d1428be0b0ca9258f058127..d9c338ff9189953329a0812250fb4946
          }
          else {
            // reference to a static method
-@@ -103,6 +116,7 @@ public class ClassWriter {
+@@ -104,6 +117,7 @@ public class ClassWriter {
  
          List<TypeAnnotation> parameterTypeAnnotations = TargetInfo.FormalParameterTarget.extract(TypeAnnotation.listFrom(mt));
          boolean explicitlyTyped = !parameterTypeAnnotations.isEmpty();
@@ -53,7 +53,7 @@ index 6f2f8419d41a240c6d1428be0b0ca9258f058127..d9c338ff9189953329a0812250fb4946
  
          if (!lambdaToAnonymous) {
            buffer.append('(');
-@@ -139,16 +153,60 @@ public class ClassWriter {
+@@ -140,16 +154,60 @@ public class ClassWriter {
            }
  
            buffer.append(") ->");
@@ -120,10 +120,10 @@ index 6f2f8419d41a240c6d1428be0b0ca9258f058127..d9c338ff9189953329a0812250fb4946
      }
      finally {
 diff --git a/src/org/jetbrains/java/decompiler/main/extern/IFernflowerPreferences.java b/src/org/jetbrains/java/decompiler/main/extern/IFernflowerPreferences.java
-index a25566f0e6ba9a4f67c6412fc379874ffca92c21..f5e95e65a807e335ce33a589348e11ad1dbbf5fe 100644
+index 36c3a07081fa04ed611100a2f489cc608f5ca849..981fae680b021336d77a685d5512e77d94d842f8 100644
 --- a/src/org/jetbrains/java/decompiler/main/extern/IFernflowerPreferences.java
 +++ b/src/org/jetbrains/java/decompiler/main/extern/IFernflowerPreferences.java
-@@ -39,6 +39,7 @@ public interface IFernflowerPreferences {
+@@ -41,6 +41,7 @@ public interface IFernflowerPreferences {
    String INCLUDE_ENTIRE_CLASSPATH = "iec";
    String QUALIFY_INNER_CLASSES = "qin";
    String EXPLICIT_GENERIC_ARGUMENTS = "ega";
@@ -131,7 +131,7 @@ index a25566f0e6ba9a4f67c6412fc379874ffca92c21..f5e95e65a807e335ce33a589348e11ad
  
    String LOG_LEVEL = "log";
    String MAX_PROCESSING_METHOD = "mpm";
-@@ -95,6 +96,7 @@ public interface IFernflowerPreferences {
+@@ -99,6 +100,7 @@ public interface IFernflowerPreferences {
      defaults.put(INCLUDE_ENTIRE_CLASSPATH, "0");
      defaults.put(QUALIFY_INNER_CLASSES, "1");
      defaults.put(EXPLICIT_GENERIC_ARGUMENTS, "0");
@@ -140,16 +140,16 @@ index a25566f0e6ba9a4f67c6412fc379874ffca92c21..f5e95e65a807e335ce33a589348e11ad
      defaults.put(LOG_LEVEL, IFernflowerLogger.Severity.INFO.name());
      defaults.put(MAX_PROCESSING_METHOD, "0");
 diff --git a/test/org/jetbrains/java/decompiler/SingleClassesTest.java b/test/org/jetbrains/java/decompiler/SingleClassesTest.java
-index 16ceb1e8e47c90da72ef3039cf625eec25b68223..c78c9554df9788b87028bcf181fc243db7a29f3f 100644
+index 3c79fdc6e1a4a89b7b068493258d661c91f1a436..6cac19407f3c70d240d533ca2115a90fd5e83295 100644
 --- a/test/org/jetbrains/java/decompiler/SingleClassesTest.java
 +++ b/test/org/jetbrains/java/decompiler/SingleClassesTest.java
-@@ -24,7 +24,8 @@ public class SingleClassesTest extends SingleClassesTestBase {
-                          IFernflowerPreferences.DUMP_ORIGINAL_LINES, "1",
-                          IFernflowerPreferences.IGNORE_INVALID_BYTECODE, "1",
+@@ -26,7 +26,8 @@ public class SingleClassesTest extends SingleClassesTestBase {
                           IFernflowerPreferences.VERIFY_ANONYMOUS_CLASSES, "1",
+                          IFernflowerPreferences.CONVERT_PATTERN_SWITCH, "1",
+                          IFernflowerPreferences.CONVERT_RECORD_PATTERN, "1",
 -                         IFernflowerPreferences.INCLUDE_ENTIRE_CLASSPATH, "1"
 +                         IFernflowerPreferences.INCLUDE_ENTIRE_CLASSPATH, "1",
 +                         IFernflowerPreferences.INLINE_SIMPLE_LAMBDAS, "0"
- );
+     );
    }
  

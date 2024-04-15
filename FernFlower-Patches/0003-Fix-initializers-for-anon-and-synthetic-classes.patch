@@ -5,10 +5,10 @@ Subject: [PATCH] Fix initializers for anon and synthetic classes
 
 
 diff --git a/src/org/jetbrains/java/decompiler/main/ClassWriter.java b/src/org/jetbrains/java/decompiler/main/ClassWriter.java
-index 31f14c60939faaf73e8b971cb64c81b49decda81..9b4e9fb3ab0a2f54c124c8a4c3943e6d7a5d01d2 100644
+index 2a5dab88cf8e9e7ace50a6714f23a93f16ef8aae..7d720fa950766b308acb6b5cfe72a540eb8dd8da 100644
 --- a/src/org/jetbrains/java/decompiler/main/ClassWriter.java
 +++ b/src/org/jetbrains/java/decompiler/main/ClassWriter.java
-@@ -46,6 +46,7 @@ public class ClassWriter {
+@@ -47,6 +47,7 @@ public class ClassWriter {
      StructClass cl = wrapper.getClassStruct();
  
      InitializerProcessor.extractInitializers(wrapper);
@@ -17,10 +17,10 @@ index 31f14c60939faaf73e8b971cb64c81b49decda81..9b4e9fb3ab0a2f54c124c8a4c3943e6d
      if (node.type == ClassNode.CLASS_ROOT &&
          !cl.isVersion5() &&
 diff --git a/src/org/jetbrains/java/decompiler/main/ClassesProcessor.java b/src/org/jetbrains/java/decompiler/main/ClassesProcessor.java
-index b09304aac7771bda2dcec3ef535f9035904f3c94..8dc45a1de093a5e81ef74e034faf2041618ced99 100644
+index 24d637108834355b349e65e78f4ef9c2c0e45d01..9fc0250da6bd987e545631c2586f90759e5a8ff0 100644
 --- a/src/org/jetbrains/java/decompiler/main/ClassesProcessor.java
 +++ b/src/org/jetbrains/java/decompiler/main/ClassesProcessor.java
-@@ -88,6 +88,31 @@ public class ClassesProcessor implements CodeConstants {
+@@ -88,6 +88,31 @@ public class ClassesProcessor {
                rec.type = entry.simpleNameIdx == 0 ? ClassNode.CLASS_ANONYMOUS : entry.outerNameIdx == 0 ? ClassNode.CLASS_LOCAL : ClassNode.CLASS_MEMBER;
                rec.accessFlags = entry.accessFlags;
  

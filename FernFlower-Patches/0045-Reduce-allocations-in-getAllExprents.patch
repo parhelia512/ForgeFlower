@@ -169,7 +169,7 @@ index 0509360d7637650341acca72e72e49026dc535a7..1a21f128c31aff9338e3be8cf5d8c603
      throw new RuntimeException("not implemented");
    }
 diff --git a/src/org/jetbrains/java/decompiler/modules/decompiler/exps/FieldExprent.java b/src/org/jetbrains/java/decompiler/modules/decompiler/exps/FieldExprent.java
-index 34ee7377dfef29d73f4cd0e5bf53944befafbd7d..926a3d1bd1baa27879b29c7482e69acdcad042f4 100644
+index f2b0a8f554b6b850cb31f2e964b9df23d42bb4a0..cf34616e044054e14f86161dc8b78cb0541bf7f7 100644
 --- a/src/org/jetbrains/java/decompiler/modules/decompiler/exps/FieldExprent.java
 +++ b/src/org/jetbrains/java/decompiler/modules/decompiler/exps/FieldExprent.java
 @@ -21,7 +21,6 @@ import org.jetbrains.java.decompiler.struct.match.MatchNode.RuleValue;
@@ -229,7 +229,7 @@ index 7c9ee0a57cd291ae20b466d70f57a8f11bf4abaa..9644863730e5cda55fa3b2556c90903c
      return lst;
    }
 diff --git a/src/org/jetbrains/java/decompiler/modules/decompiler/exps/InvocationExprent.java b/src/org/jetbrains/java/decompiler/modules/decompiler/exps/InvocationExprent.java
-index 1a3bd9c6b051447ef2aca98b58ff70b3b89da52c..7f4127e65c89b2f63c94cc6a58a96ec9d2f701f0 100644
+index 34e08cd7710f1304a8841dbcb9f78583ee61ddb3..f0bfbac2919cc524313fbaeebaa9aa2a0be75fa5 100644
 --- a/src/org/jetbrains/java/decompiler/modules/decompiler/exps/InvocationExprent.java
 +++ b/src/org/jetbrains/java/decompiler/modules/decompiler/exps/InvocationExprent.java
 @@ -523,8 +523,7 @@ public class InvocationExprent extends Exprent {
@@ -280,10 +280,10 @@ index 72205fbd81840cda91ca303d15758df4a2e79699..b962f9154d44bf276816bf109e6a236f
        lst.addAll(lstDims);
        lst.addAll(lstArrayElements);
 diff --git a/src/org/jetbrains/java/decompiler/modules/decompiler/exps/SwitchExprent.java b/src/org/jetbrains/java/decompiler/modules/decompiler/exps/SwitchExprent.java
-index 11000d30cbdc93e360cb1bc96b53987bc692e3bd..048e49d62e902485ac89643350d750e7eb57995c 100644
+index e9c1db3545b73689738420d8dc1ac08ca5d3072e..e273454c88bde3faa54c222ad76eb5e9ef4eb53c 100644
 --- a/src/org/jetbrains/java/decompiler/modules/decompiler/exps/SwitchExprent.java
 +++ b/src/org/jetbrains/java/decompiler/modules/decompiler/exps/SwitchExprent.java
-@@ -67,8 +67,7 @@ public class SwitchExprent extends Exprent {
+@@ -71,8 +71,7 @@ public class SwitchExprent extends Exprent {
    }
  
    @Override
@@ -294,10 +294,10 @@ index 11000d30cbdc93e360cb1bc96b53987bc692e3bd..048e49d62e902485ac89643350d750e7
      return lst;
    }
 diff --git a/src/org/jetbrains/java/decompiler/modules/decompiler/exps/VarExprent.java b/src/org/jetbrains/java/decompiler/modules/decompiler/exps/VarExprent.java
-index 0dd8768a10a4edb5901d3112145df58c871b68c9..e79c4571e227ad532760bdbc4ecf52030b31bfb6 100644
+index 26571d9dcb7bab08c93a463b02d9640143719730..9e1a14d0c6398195dee876f11b5559f7539eaad2 100644
 --- a/src/org/jetbrains/java/decompiler/modules/decompiler/exps/VarExprent.java
 +++ b/src/org/jetbrains/java/decompiler/modules/decompiler/exps/VarExprent.java
-@@ -27,7 +27,6 @@ import org.jetbrains.java.decompiler.struct.match.MatchNode;
+@@ -28,7 +28,6 @@ import org.jetbrains.java.decompiler.struct.match.MatchNode;
  import org.jetbrains.java.decompiler.struct.match.MatchNode.RuleValue;
  import org.jetbrains.java.decompiler.util.TextBuffer;
  
@@ -305,7 +305,7 @@ index 0dd8768a10a4edb5901d3112145df58c871b68c9..e79c4571e227ad532760bdbc4ecf5203
  import java.util.BitSet;
  import java.util.Collections;
  import java.util.List;
-@@ -87,8 +86,8 @@ public class VarExprent extends Exprent {
+@@ -88,8 +87,8 @@ public class VarExprent extends Exprent {
    }
  
    @Override

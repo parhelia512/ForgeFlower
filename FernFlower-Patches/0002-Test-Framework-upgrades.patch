@@ -20,10 +20,10 @@ index bb303e84f33161a4b4fd40a73aa48d29981d9ef2..cc1f537e71af0748b7b97d7d8489198e
      throw new RuntimeException("not implemented");
    }
 diff --git a/src/org/jetbrains/java/decompiler/modules/decompiler/stats/Statement.java b/src/org/jetbrains/java/decompiler/modules/decompiler/stats/Statement.java
-index 18a820c7d4723b35f09fa4c841e8399a547acdc7..224d3636f7c9d502cc65c122f542324c1ba7028a 100644
+index 2b23675a5a93fc8b2a2e48f737b33e1128d23d32..a934afac9330104067f295e6e940f0370abb992f 100644
 --- a/src/org/jetbrains/java/decompiler/modules/decompiler/stats/Statement.java
 +++ b/src/org/jetbrains/java/decompiler/modules/decompiler/stats/Statement.java
-@@ -430,6 +430,10 @@ public abstract class Statement implements IMatchable {
+@@ -437,6 +437,10 @@ public abstract class Statement implements IMatchable {
      return false;
    }
  
@@ -35,18 +35,18 @@ index 18a820c7d4723b35f09fa4c841e8399a547acdc7..224d3636f7c9d502cc65c122f542324c
      throw new RuntimeException("not implemented");
    }
 diff --git a/test/org/jetbrains/java/decompiler/DecompilerTestFixture.java b/test/org/jetbrains/java/decompiler/DecompilerTestFixture.java
-index f8c2afde883ffe8c681d4e63821991ae82fccdaa..49cbf8407df5952f3da980e6a10f284ff2f27817 100644
+index 72ef0ba671bdd422a382c3e0803898785a87e4e5..8068c95bc177e2ece76117a924ffe810d36e50c4 100644
 --- a/test/org/jetbrains/java/decompiler/DecompilerTestFixture.java
 +++ b/test/org/jetbrains/java/decompiler/DecompilerTestFixture.java
-@@ -28,6 +28,7 @@ public class DecompilerTestFixture {
+@@ -31,6 +31,7 @@ public class DecompilerTestFixture {
    private Path tempDir;
    private Path targetDir;
    private TestConsoleDecompiler decompiler;
 +  private boolean cleanup = true;
  
    public void setUp(Map<String, String> customOptions) throws IOException {
-     testDataDir = Path.of("testData");
-@@ -56,7 +57,7 @@ public class DecompilerTestFixture {
+     setUp(customOptions, null);
+@@ -69,7 +70,7 @@ public class DecompilerTestFixture {
  
    public void tearDown() throws IOException {
      try {
@@ -55,7 +55,7 @@ index f8c2afde883ffe8c681d4e63821991ae82fccdaa..49cbf8407df5952f3da980e6a10f284f
          deleteRecursively(tempDir);
        }
      }
-@@ -81,6 +82,14 @@ public class DecompilerTestFixture {
+@@ -94,6 +95,14 @@ public class DecompilerTestFixture {
      return decompiler;
    }
  
@@ -71,7 +71,7 @@ index f8c2afde883ffe8c681d4e63821991ae82fccdaa..49cbf8407df5952f3da980e6a10f284f
      return Files.isDirectory(dir) && Files.isDirectory(dir.resolve("classes")) && Files.isDirectory(dir.resolve("results"));
    }
 diff --git a/test/org/jetbrains/java/decompiler/SingleClassesTest.java b/test/org/jetbrains/java/decompiler/SingleClassesTest.java
-index fc6a4427e586f51fa0bbe43cbb206809e32dfa57..89adb4e6fca7186ae849e62b98a9253de2dd29ef 100644
+index e07bf8790b02da4e7c2dfa352f9108a374ff152e..752665f316cb6297a75272da8e4942f7372fb544 100644
 --- a/test/org/jetbrains/java/decompiler/SingleClassesTest.java
 +++ b/test/org/jetbrains/java/decompiler/SingleClassesTest.java
 @@ -4,28 +4,13 @@ package org.jetbrains.java.decompiler;
@@ -104,7 +104,7 @@ index fc6a4427e586f51fa0bbe43cbb206809e32dfa57..89adb4e6fca7186ae849e62b98a9253d
    /*
     * Set individual test duration time limit to 60 seconds.
     * This will help us to test bugs hanging decompiler.
-@@ -33,19 +18,12 @@ public class SingleClassesTest {
+@@ -33,22 +18,15 @@ public class SingleClassesTest {
    @Rule
    public Timeout globalTimeout = Timeout.seconds(60);
  
@@ -117,22 +117,24 @@ index fc6a4427e586f51fa0bbe43cbb206809e32dfa57..89adb4e6fca7186ae849e62b98a9253d
 +    return Map.of(IFernflowerPreferences.BYTECODE_SOURCE_MAPPING, "1",
                           IFernflowerPreferences.DUMP_ORIGINAL_LINES, "1",
                           IFernflowerPreferences.IGNORE_INVALID_BYTECODE, "1",
--                         IFernflowerPreferences.VERIFY_ANONYMOUS_CLASSES, "1"));
+                          IFernflowerPreferences.VERIFY_ANONYMOUS_CLASSES, "1",
+                          IFernflowerPreferences.CONVERT_PATTERN_SWITCH, "1",
+                          IFernflowerPreferences.CONVERT_RECORD_PATTERN, "1"
+-    ));
 -  }
 -
 -  @After
 -  public void tearDown() throws IOException {
 -    fixture.tearDown();
 -    fixture = null;
-+                         IFernflowerPreferences.VERIFY_ANONYMOUS_CLASSES, "1");
++    );
    }
  
    @Test public void testPrimitiveNarrowing() { doTest("pkg/TestPrimitiveNarrowing"); }
-@@ -229,49 +207,4 @@ public class SingleClassesTest {
+@@ -251,48 +229,4 @@ public class SingleClassesTest {
  
-   @Test(expected = ClassFormatException.class)
-   public void testUnsupportedConstantPoolEntry() { doTest("java11/TestUnsupportedConstantPoolEntry"); }
--
+   @Test public void testSwitchOnStatic() { doTest("pkg/SwitchOnStatic"); }
+ 
 -  private void doTest(String testFile, String... companionFiles) {
 -    var decompiler = fixture.getDecompiler();
 -
@@ -160,7 +162,7 @@ index fc6a4427e586f51fa0bbe43cbb206809e32dfa57..89adb4e6fca7186ae849e62b98a9253d
 -    assertFilesEqual(referenceFile, decompiledFile);
 -  }
 -
--  private static List<Path> collectClasses(Path classFile) {
+-  static List<Path> collectClasses(Path classFile) {
 -    var files = new ArrayList<Path>();
 -    files.add(classFile);
 -
@@ -180,25 +182,11 @@ index fc6a4427e586f51fa0bbe43cbb206809e32dfa57..89adb4e6fca7186ae849e62b98a9253d
  }
 diff --git a/test/org/jetbrains/java/decompiler/SingleClassesTestBase.java b/test/org/jetbrains/java/decompiler/SingleClassesTestBase.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..05df2e2f7842eb444a1015c69894efc69416f55a
+index 0000000000000000000000000000000000000000..1e36c79314a4b8c552b32f33c69d70eb45ef1cfa
 --- /dev/null
 +++ b/test/org/jetbrains/java/decompiler/SingleClassesTestBase.java
-@@ -0,0 +1,96 @@
-+/*
-+ * Copyright 2000-2017 JetBrains s.r.o.
-+ *
-+ * Licensed under the Apache License, Version 2.0 (the "License");
-+ * you may not use this file except in compliance with the License.
-+ * You may obtain a copy of the License at
-+ *
-+ * http://www.apache.org/licenses/LICENSE-2.0
-+ *
-+ * Unless required by applicable law or agreed to in writing, software
-+ * distributed under the License is distributed on an "AS IS" BASIS,
-+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-+ * See the License for the specific language governing permissions and
-+ * limitations under the License.
-+ */
+@@ -0,0 +1,82 @@
++// Copyright 2000-2023 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
 +package org.jetbrains.java.decompiler;
 +
 +import org.junit.After;
@@ -218,7 +206,7 @@ index 0000000000000000000000000000000000000000..05df2e2f7842eb444a1015c69894efc6
 +
 +public class SingleClassesTestBase {
 +  protected DecompilerTestFixture fixture;
-+  
++
 +  protected Map<String, String> getDecompilerOptions() {
 +    return Map.of();
 +  }
@@ -262,7 +250,7 @@ index 0000000000000000000000000000000000000000..05df2e2f7842eb444a1015c69894efc6
 +    assertFilesEqual(referenceFile, decompiledFile);
 +  }
 +
-+  private static List<Path> collectClasses(Path classFile) {
++  static List<Path> collectClasses(Path classFile) {
 +    var files = new ArrayList<Path>();
 +    files.add(classFile);
 +

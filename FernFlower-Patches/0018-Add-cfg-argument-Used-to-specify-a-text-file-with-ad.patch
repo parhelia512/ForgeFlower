@@ -7,10 +7,10 @@ Subject: [PATCH] Add -cfg argument Used to specify a text file with additional
 Our use case is specifying a ton of external libraries. It will read a text file and replace the -cfg entry with those lines.
 
 diff --git a/src/org/jetbrains/java/decompiler/main/decompiler/ConsoleDecompiler.java b/src/org/jetbrains/java/decompiler/main/decompiler/ConsoleDecompiler.java
-index d0ae9a7c3b20de44cb202390cc0dfd4d690fee64..c5398222893b170023afa13fa5b6c773ab3edc8d 100644
+index 5c1188023ab7fb5e453fdb2d8d958bb014bcb058..ab6ac3b75db9877fb9cfa5e5f910fd5c01b5c9a6 100644
 --- a/src/org/jetbrains/java/decompiler/main/decompiler/ConsoleDecompiler.java
 +++ b/src/org/jetbrains/java/decompiler/main/decompiler/ConsoleDecompiler.java
-@@ -10,9 +10,13 @@ import org.jetbrains.java.decompiler.util.InterpreterUtil;
+@@ -11,9 +11,13 @@ import org.jetbrains.java.decompiler.util.InterpreterUtil;
  
  import java.io.*;
  import java.nio.charset.StandardCharsets;
@@ -24,7 +24,7 @@ index d0ae9a7c3b20de44cb202390cc0dfd4d690fee64..c5398222893b170023afa13fa5b6c773
  import java.util.zip.ZipEntry;
  import java.util.zip.ZipFile;
  import java.util.zip.ZipOutputStream;
-@@ -20,6 +24,38 @@ import java.util.zip.ZipOutputStream;
+@@ -21,6 +25,38 @@ import java.util.zip.ZipOutputStream;
  public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
    @SuppressWarnings("UseOfSystemOutOrSystemErr")
    public static void main(String[] args) {
@@ -63,7 +63,7 @@ index d0ae9a7c3b20de44cb202390cc0dfd4d690fee64..c5398222893b170023afa13fa5b6c773
      if (args.length < 2) {
        System.out.println(
          "Usage: java -jar fernflower.jar [-<option>=<value>]* [<source>]+ <destination>\n" +
-@@ -280,4 +316,4 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
+@@ -286,4 +322,4 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
        DecompilerContext.getLogger().writeMessage("Cannot close " + file, IFernflowerLogger.Severity.WARN);
      }
    }

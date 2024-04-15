@@ -249,7 +249,7 @@ index b44a78019f0717213822ef5572c5d7ecde6d4ee3..20d3f0391343689eb604b8b953cabb26
 +  }
 +}
 diff --git a/src/org/jetbrains/java/decompiler/modules/decompiler/exps/FieldExprent.java b/src/org/jetbrains/java/decompiler/modules/decompiler/exps/FieldExprent.java
-index 040e5d21985979a9686cb9fee6e3048fe87e5464..e98b53eb94ed7f1f5c936887be8418e6637b2b43 100644
+index 7d491eeac1553b3ac613b3cb453dc6ac4167bfe3..ca53ffe55c0a97d9d38f5c770f7e648feb7f1f97 100644
 --- a/src/org/jetbrains/java/decompiler/modules/decompiler/exps/FieldExprent.java
 +++ b/src/org/jetbrains/java/decompiler/modules/decompiler/exps/FieldExprent.java
 @@ -33,18 +33,24 @@ public class FieldExprent extends Exprent {
@@ -259,7 +259,7 @@ index 040e5d21985979a9686cb9fee6e3048fe87e5464..e98b53eb94ed7f1f5c936887be8418e6
 +  private boolean forceQualified = false;
  
    public FieldExprent(LinkConstant cn, Exprent instance, BitSet bytecodeOffsets) {
-     this(cn.elementname, cn.classname, instance == null, instance, FieldDescriptor.parseDescriptor(cn.descriptor), bytecodeOffsets);
+     this(cn.elementName, cn.className, instance == null, instance, FieldDescriptor.parseDescriptor(cn.descriptor), bytecodeOffsets);
    }
  
    public FieldExprent(String name, String classname, boolean isStatic, Exprent instance, FieldDescriptor descriptor, BitSet bytecodeOffsets) {

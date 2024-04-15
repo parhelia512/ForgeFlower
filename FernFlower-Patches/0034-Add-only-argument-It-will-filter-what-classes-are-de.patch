@@ -8,10 +8,10 @@ Uses a prefix system, so -only=net/minecraft/block/ will decompile all classes i
 Useful for debugging to limit scope/runtime.
 
 diff --git a/src/org/jetbrains/java/decompiler/main/ClassesProcessor.java b/src/org/jetbrains/java/decompiler/main/ClassesProcessor.java
-index 921b3b653743ff77dead340be940fcef759bcead..ff19c7105c0e6bcfa280dca8255eaf32357a2fc3 100644
+index dd4eae8c9766ece435457ab75ec66d73d1666ee5..a8f9d10b945b9b2975cfe2be2da2d61cc8518a96 100644
 --- a/src/org/jetbrains/java/decompiler/main/ClassesProcessor.java
 +++ b/src/org/jetbrains/java/decompiler/main/ClassesProcessor.java
-@@ -36,6 +36,7 @@ public class ClassesProcessor implements CodeConstants {
+@@ -36,6 +36,7 @@ public class ClassesProcessor {
  
    private final StructContext context;
    private final Map<String, ClassNode> mapRootClasses = new HashMap<>();
@@ -19,7 +19,7 @@ index 921b3b653743ff77dead340be940fcef759bcead..ff19c7105c0e6bcfa280dca8255eaf32
  
    private static class Inner {
      private String simpleName;
-@@ -61,6 +62,22 @@ public class ClassesProcessor implements CodeConstants {
+@@ -61,6 +62,22 @@ public class ClassesProcessor {
      this.context = context;
    }
  
@@ -42,7 +42,7 @@ index 921b3b653743ff77dead340be940fcef759bcead..ff19c7105c0e6bcfa280dca8255eaf32
    public void loadClasses(IIdentifierRenamer renamer) {
      Map<String, Inner> mapInnerClasses = new HashMap<>();
      Map<String, Set<String>> mapNestedClassReferences = new HashMap<>();
-@@ -160,9 +177,11 @@ public class ClassesProcessor implements CodeConstants {
+@@ -160,9 +177,11 @@ public class ClassesProcessor {
            }
          }
  
@@ -58,10 +58,10 @@ index 921b3b653743ff77dead340be940fcef759bcead..ff19c7105c0e6bcfa280dca8255eaf32
        linkEnclosingMethods(cl);
      }
 diff --git a/src/org/jetbrains/java/decompiler/main/Fernflower.java b/src/org/jetbrains/java/decompiler/main/Fernflower.java
-index aa8b1132b84fc44bf6decd96ebaf5c021c185ac1..bc97cdaa10bcc5e99860241f0ee0ef8cfff8434e 100644
+index 39f27f9e24c80b7ad52a4b472771fd01a515531c..7fe00cb6d728d0c4551c60fce073f53ff89cd8e2 100644
 --- a/src/org/jetbrains/java/decompiler/main/Fernflower.java
 +++ b/src/org/jetbrains/java/decompiler/main/Fernflower.java
-@@ -116,6 +116,10 @@ public class Fernflower implements IDecompiledData {
+@@ -125,6 +125,10 @@ public class Fernflower implements IDecompiledData {
      structContext.saveContext();
    }
  
@@ -72,7 +72,7 @@ index aa8b1132b84fc44bf6decd96ebaf5c021c185ac1..bc97cdaa10bcc5e99860241f0ee0ef8c
    public void clearContext() {
      DecompilerContext.setCurrentContext(null);
    }
-@@ -123,7 +127,7 @@ public class Fernflower implements IDecompiledData {
+@@ -132,7 +136,7 @@ public class Fernflower implements IDecompiledData {
    @Override
    public String getClassEntryName(StructClass cl, String entryName) {
      ClassNode node = classProcessor.getMapRootClasses().get(cl.qualifiedName);
@@ -82,10 +82,10 @@ index aa8b1132b84fc44bf6decd96ebaf5c021c185ac1..bc97cdaa10bcc5e99860241f0ee0ef8c
      }
      else if (converter != null) {
 diff --git a/src/org/jetbrains/java/decompiler/main/decompiler/ConsoleDecompiler.java b/src/org/jetbrains/java/decompiler/main/decompiler/ConsoleDecompiler.java
-index b44bf391a4914dcee3228cfbb3bbdfefec2f3527..e77afd845015501a743b091d3a3cc716497ffc75 100644
+index 3261ca70b9045a41b6ce9251f599aedc6dbdb0b4..520828791f5fa28873c18583ccda23e38961ed75 100644
 --- a/src/org/jetbrains/java/decompiler/main/decompiler/ConsoleDecompiler.java
 +++ b/src/org/jetbrains/java/decompiler/main/decompiler/ConsoleDecompiler.java
-@@ -66,6 +66,7 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
+@@ -67,6 +67,7 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
      Map<String, Object> mapOptions = new HashMap<>();
      List<File> sources = new ArrayList<>();
      List<File> libraries = new ArrayList<>();
@@ -93,7 +93,7 @@ index b44bf391a4914dcee3228cfbb3bbdfefec2f3527..e77afd845015501a743b091d3a3cc716
  
      boolean isOption = true;
      for (int i = 0; i < args.length - 1; ++i) { // last parameter - destination
-@@ -88,6 +89,9 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
+@@ -89,6 +90,9 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
          if (arg.startsWith("-e=")) {
            addPath(libraries, arg.substring(3));
          }
@@ -103,7 +103,7 @@ index b44bf391a4914dcee3228cfbb3bbdfefec2f3527..e77afd845015501a743b091d3a3cc716
          else {
            addPath(sources, arg);
          }
-@@ -114,6 +118,9 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
+@@ -115,6 +119,9 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
      for (File source : sources) {
        decompiler.addSource(source);
      }
@@ -113,7 +113,7 @@ index b44bf391a4914dcee3228cfbb3bbdfefec2f3527..e77afd845015501a743b091d3a3cc716
  
      decompiler.decompileContext();
    }
-@@ -151,6 +158,10 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
+@@ -157,6 +164,10 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
      engine.addLibrary(library);
    }
  

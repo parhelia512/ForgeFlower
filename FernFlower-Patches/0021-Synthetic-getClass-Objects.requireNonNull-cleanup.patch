@@ -5,12 +5,12 @@ Subject: [PATCH] Synthetic getClass/Objects.requireNonNull cleanup
 
 
 diff --git a/src/org/jetbrains/java/decompiler/modules/decompiler/ExprProcessor.java b/src/org/jetbrains/java/decompiler/modules/decompiler/ExprProcessor.java
-index bc8c421206b44539c2f2da859658102f2b71af73..b2963191fe5c6e162346fc98f9cefd122da23ee2 100644
+index e277221f2b1a162ed72e519a50f3c30d17a3a92a..86575f7bbc4b49ee79d06cf32de14babc3405f3f 100644
 --- a/src/org/jetbrains/java/decompiler/modules/decompiler/ExprProcessor.java
 +++ b/src/org/jetbrains/java/decompiler/modules/decompiler/ExprProcessor.java
-@@ -591,6 +591,23 @@ public class ExprProcessor implements CodeConstants {
+@@ -596,6 +596,23 @@ public class ExprProcessor {
            break;
-         case opc_pop:
+         case CodeConstants.opc_pop:
            stack.pop();
 +          // check for synthetic getClass (J8) / Objects.requireNonNull() (J9+) calls added by the compiler
 +          // see https://stackoverflow.com/a/20130641
@@ -30,7 +30,7 @@ index bc8c421206b44539c2f2da859658102f2b71af73..b2963191fe5c6e162346fc98f9cefd12
 +            }
 +          }
            break;
-         case opc_pop2:
+         case CodeConstants.opc_pop2:
            if (stack.getByOffset(-1).getExprType().getStackSize() == 1) {
 diff --git a/src/org/jetbrains/java/decompiler/modules/decompiler/SimplifyExprentsHelper.java b/src/org/jetbrains/java/decompiler/modules/decompiler/SimplifyExprentsHelper.java
 index dc3d20eed5ddcac36204fc9ed75d73c53a8c9805..efa677ae6cfdc08635eff080c7241ec086e5c945 100644
@@ -135,7 +135,7 @@ index dc3d20eed5ddcac36204fc9ed75d73c53a8c9805..efa677ae6cfdc08635eff080c7241ec0
    private static boolean isConstructorInvocationRemote(List<Exprent> list, int index) {
      Exprent current = list.get(index);
 diff --git a/src/org/jetbrains/java/decompiler/modules/decompiler/exps/InvocationExprent.java b/src/org/jetbrains/java/decompiler/modules/decompiler/exps/InvocationExprent.java
-index f23110233f59728ab4b700bfc0fa2b625f0d7071..c77ac2f2e4f8936c131f932940878fab9f5c2eb8 100644
+index ebd4577eb6954512fbfd91f998d1d2296b5579c3..71ac33e05e62817fd9c2f0dd900e48df4f61d04e 100644
 --- a/src/org/jetbrains/java/decompiler/modules/decompiler/exps/InvocationExprent.java
 +++ b/src/org/jetbrains/java/decompiler/modules/decompiler/exps/InvocationExprent.java
 @@ -61,6 +61,7 @@ public class InvocationExprent extends Exprent {
@@ -154,7 +154,7 @@ index f23110233f59728ab4b700bfc0fa2b625f0d7071..c77ac2f2e4f8936c131f932940878fab
    }
  
    @Override
-@@ -954,6 +956,14 @@ public class InvocationExprent extends Exprent {
+@@ -958,6 +960,14 @@ public class InvocationExprent extends Exprent {
      return bootstrapArguments;
    }
  

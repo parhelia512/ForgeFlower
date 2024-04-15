@@ -5,10 +5,10 @@ Subject: [PATCH] Fix local variables incorrectly merging.
 
 
 diff --git a/src/org/jetbrains/java/decompiler/modules/decompiler/StackVarsProcessor.java b/src/org/jetbrains/java/decompiler/modules/decompiler/StackVarsProcessor.java
-index 139ccdb55347a5d66627c1489ee73910fed46f05..388ead266fe10aa4c251d3b7c6207e20126e66b9 100644
+index f62f2f6cba3a5a069d47c414c15fc7aba1202726..4aaf61bd4d2df81bdd1a3f7c314ca030cb62882a 100644
 --- a/src/org/jetbrains/java/decompiler/modules/decompiler/StackVarsProcessor.java
 +++ b/src/org/jetbrains/java/decompiler/modules/decompiler/StackVarsProcessor.java
-@@ -602,7 +602,7 @@ public class StackVarsProcessor {
+@@ -631,7 +631,7 @@ public class StackVarsProcessor {
  
      for (Entry<Integer, Set<VarVersionPair>> ent : mapVars.entrySet()) {
        FastSparseSet<Integer> liveverset = mapLiveVars.get(ent.getKey());
@@ -17,7 +17,7 @@ index 139ccdb55347a5d66627c1489ee73910fed46f05..388ead266fe10aa4c251d3b7c6207e20
          return false;
        }
  
-@@ -611,13 +611,13 @@ public class StackVarsProcessor {
+@@ -640,13 +640,13 @@ public class StackVarsProcessor {
          domset.add(ssuversions.nodes.getWithKey(verpaar));
        }
  

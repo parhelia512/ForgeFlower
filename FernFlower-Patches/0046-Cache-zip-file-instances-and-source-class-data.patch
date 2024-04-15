@@ -5,10 +5,10 @@ Subject: [PATCH] Cache zip file instances and source class data
 
 
 diff --git a/src/org/jetbrains/java/decompiler/main/Fernflower.java b/src/org/jetbrains/java/decompiler/main/Fernflower.java
-index 8e8abfd701a61accbd67ca4e661d7d329fd48c0b..2dafbbd4ea22bdeeef24d0a0dbc533efc613b4e6 100644
+index 8c734b415fda77f3d3c152c60a3781f85154e459..fa9b540f40721996877816768ca40caba54e883a 100644
 --- a/src/org/jetbrains/java/decompiler/main/Fernflower.java
 +++ b/src/org/jetbrains/java/decompiler/main/Fernflower.java
-@@ -138,6 +138,7 @@ public class Fernflower implements IDecompiledData {
+@@ -152,6 +152,7 @@ public class Fernflower implements IDecompiledData {
    }
  
    public void clearContext() {
@@ -17,10 +17,10 @@ index 8e8abfd701a61accbd67ca4e661d7d329fd48c0b..2dafbbd4ea22bdeeef24d0a0dbc533ef
    }
  
 diff --git a/src/org/jetbrains/java/decompiler/main/decompiler/ConsoleDecompiler.java b/src/org/jetbrains/java/decompiler/main/decompiler/ConsoleDecompiler.java
-index b4869c2a756adb1c2da8b62fd8d4dc3f3f7cb2ca..1172775610851755373694f48903594af615f816 100644
+index 3e81aa1cde7239c69476e92e854848e451d616bd..da9ed385e0d18bac0f9043d62867ed6912c7f893 100644
 --- a/src/org/jetbrains/java/decompiler/main/decompiler/ConsoleDecompiler.java
 +++ b/src/org/jetbrains/java/decompiler/main/decompiler/ConsoleDecompiler.java
-@@ -7,6 +7,7 @@ import org.jetbrains.java.decompiler.main.extern.IBytecodeProvider;
+@@ -8,6 +8,7 @@ import org.jetbrains.java.decompiler.main.extern.IBytecodeProvider;
  import org.jetbrains.java.decompiler.main.extern.IFernflowerLogger;
  import org.jetbrains.java.decompiler.main.extern.IResultSaver;
  import org.jetbrains.java.decompiler.util.InterpreterUtil;
@@ -28,15 +28,15 @@ index b4869c2a756adb1c2da8b62fd8d4dc3f3f7cb2ca..1172775610851755373694f48903594a
  
  import java.io.*;
  import java.nio.charset.StandardCharsets;
-@@ -144,6 +145,7 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
+@@ -145,6 +146,7 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
    private final Fernflower engine;
    private final Map<String, ZipOutputStream> mapArchiveStreams = new HashMap<>();
    private final Map<String, Set<String>> mapArchiveEntries = new HashMap<>();
 +  private final ZipFileCache openZips = new ZipFileCache();
  
-   protected ConsoleDecompiler(File destination, Map<String, Object> options, IFernflowerLogger logger) {
+   public ConsoleDecompiler(File destination, Map<String, Object> options, IFernflowerLogger logger) {
      root = destination;
-@@ -179,16 +181,15 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
+@@ -185,16 +187,15 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
  
    @Override
    public byte[] getBytecode(String externalPath, String internalPath) throws IOException {
@@ -58,7 +58,7 @@ index b4869c2a756adb1c2da8b62fd8d4dc3f3f7cb2ca..1172775610851755373694f48903594a
      }
    }
  
-@@ -266,7 +267,8 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
+@@ -272,7 +273,8 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
        return;
      }
  
@@ -68,7 +68,7 @@ index b4869c2a756adb1c2da8b62fd8d4dc3f3f7cb2ca..1172775610851755373694f48903594a
        ZipEntry entry = srcArchive.getEntry(entryName);
        if (entry != null) {
          try (InputStream in = srcArchive.getInputStream(entry)) {
-@@ -336,4 +338,9 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
+@@ -342,4 +344,9 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
        DecompilerContext.getLogger().writeMessage("Cannot close " + file, IFernflowerLogger.Severity.WARN);
      }
    }
@@ -295,10 +295,10 @@ index 0000000000000000000000000000000000000000..f6eabd65a54198170927ef523deb63e5
 +  }
 +}
 diff --git a/test/org/jetbrains/java/decompiler/DecompilerTestFixture.java b/test/org/jetbrains/java/decompiler/DecompilerTestFixture.java
-index 49cbf8407df5952f3da980e6a10f284ff2f27817..ab0c999a20a8a4598993baf09affe91a3cdf5fc9 100644
+index 8068c95bc177e2ece76117a924ffe810d36e50c4..82741831cc6c120b3ebe6e65a7456e94ff318ae4 100644
 --- a/test/org/jetbrains/java/decompiler/DecompilerTestFixture.java
 +++ b/test/org/jetbrains/java/decompiler/DecompilerTestFixture.java
-@@ -62,7 +62,7 @@ public class DecompilerTestFixture {
+@@ -75,7 +75,7 @@ public class DecompilerTestFixture {
        }
      }
      finally {
@@ -307,7 +307,7 @@ index 49cbf8407df5952f3da980e6a10f284ff2f27817..ab0c999a20a8a4598993baf09affe91a
      }
    }
  
-@@ -157,7 +157,7 @@ public class DecompilerTestFixture {
+@@ -174,7 +174,7 @@ public class DecompilerTestFixture {
        }
      }
  
