@@ -1,7 +1,26 @@
 pluginManagement {
     repositories {
         gradlePluginPortal()
-        maven { url = 'https://maven.minecraftforge.net/' }
+        maven {
+            name = 'MinecraftForge'
+            url = 'https://maven.minecraftforge.net/'
+        }
+    }
+}
+
+plugins {
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.7.0'
+}
+
+dependencyResolutionManagement {
+    versionCatalogs {
+        libs {
+            library('null', 'org.jetbrains:annotations:24.1.0')
+            library('gson', 'com.google.code.gson:gson:2.10.1')
+            library('hamcrest', 'org.hamcrest:hamcrest-core:1.3')
+            library('assertj', 'org.assertj:assertj-core:3.25.3')
+            library('junit', 'junit:junit:4.12')
+        }
     }
 }
 
