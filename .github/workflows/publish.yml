@@ -14,6 +14,7 @@ jobs:
       java: 17
       gradle_tasks: "ForgeFlower:publish"
       artifact_name: "forgeflower"
+      submodules: "true"
     secrets:
       DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
       PROMOTE_ARTIFACT_WEBHOOK: ${{ secrets.PROMOTE_ARTIFACT_WEBHOOK }}
