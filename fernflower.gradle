@@ -50,6 +50,7 @@ changelog {
 }
 tasks.named('createChangelog').configure {
     gitDirectory = rootProject.layout.projectDirectory.dir('.git')
+    outputFile = rootProject.layout.buildDirectory.file('changelog.txt')
 }
 
 publishing {
