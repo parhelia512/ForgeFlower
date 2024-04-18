@@ -211,20 +211,20 @@ index cf03900654e427bd435ba6dc2d5a0cec8c8708e4..017d3975a3cbe06e485b65ca1b75d6c6
 +  }
  }
 diff --git a/src/org/jetbrains/java/decompiler/struct/ContextUnit.java b/src/org/jetbrains/java/decompiler/struct/ContextUnit.java
-index 7d44617f437ad6e78e204d56c394be5e0d5962c4..32a48812223687f21030a448926e45a3f89061cb 100644
+index b097768a602ed73aa4079e8097d1eb707442394f..875ba77596a678d7d76b6422e761840773b5d85b 100644
 --- a/src/org/jetbrains/java/decompiler/struct/ContextUnit.java
 +++ b/src/org/jetbrains/java/decompiler/struct/ContextUnit.java
-@@ -193,6 +193,9 @@ public class ContextUnit {
-             futures.add(executor.submit(() -> {
+@@ -194,6 +194,9 @@ public class ContextUnit {
                DecompilerContext.setCurrentContext(clCtx.ctx);
                clCtx.classContent = decompiledData.getClassContent(clCtx.cl);
+               clCtx.shouldContinue = clCtx.classContent != null;
 +              if (DecompilerContext.getOption(IFernflowerPreferences.BYTECODE_SOURCE_MAPPING)) {
 +                clCtx.mapping = DecompilerContext.getBytecodeSourceMapper().getOriginalLinesMapping();
 +              }
                DecompilerContext.setCurrentContext(null);
              }));
            }
-@@ -202,7 +205,7 @@ public class ContextUnit {
+@@ -203,7 +206,7 @@ public class ContextUnit {
  
          for (final ClassContext clCtx : toProcess) {
            if (clCtx.shouldContinue) {
@@ -233,7 +233,7 @@ index 7d44617f437ad6e78e204d56c394be5e0d5962c4..32a48812223687f21030a448926e45a3
            }
          }
  
-@@ -239,6 +242,7 @@ public class ContextUnit {
+@@ -240,6 +243,7 @@ public class ContextUnit {
      public boolean shouldContinue;
      public DecompilerContext ctx;
      String classContent;

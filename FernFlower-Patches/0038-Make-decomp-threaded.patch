@@ -681,7 +681,7 @@ index 981fae680b021336d77a685d5512e77d94d842f8..bfd9372cd9c5b8a2f7e6714cb63b13b0
      defaults.put(LOG_LEVEL, IFernflowerLogger.Severity.INFO.name());
      defaults.put(MAX_PROCESSING_METHOD, "0");
 diff --git a/src/org/jetbrains/java/decompiler/struct/ContextUnit.java b/src/org/jetbrains/java/decompiler/struct/ContextUnit.java
-index 7b0946ed0de6af2dbe2043332650a09880027726..7d44617f437ad6e78e204d56c394be5e0d5962c4 100644
+index 7b0946ed0de6af2dbe2043332650a09880027726..b097768a602ed73aa4079e8097d1eb707442394f 100644
 --- a/src/org/jetbrains/java/decompiler/struct/ContextUnit.java
 +++ b/src/org/jetbrains/java/decompiler/struct/ContextUnit.java
 @@ -14,8 +14,14 @@ import java.io.IOException;
@@ -711,7 +711,7 @@ index 7b0946ed0de6af2dbe2043332650a09880027726..7d44617f437ad6e78e204d56c394be5e
              if (content != null) {
                int[] mapping = null;
                if (DecompilerContext.getOption(IFernflowerPreferences.BYTECODE_SOURCE_MAPPING)) {
-@@ -149,13 +158,51 @@ public class ContextUnit {
+@@ -149,13 +158,52 @@ public class ContextUnit {
            }
          }
  
@@ -756,6 +756,7 @@ index 7b0946ed0de6af2dbe2043332650a09880027726..7d44617f437ad6e78e204d56c394be5e
 +            futures.add(executor.submit(() -> {
 +              DecompilerContext.setCurrentContext(clCtx.ctx);
 +              clCtx.classContent = decompiledData.getClassContent(clCtx.cl);
++              clCtx.shouldContinue = clCtx.classContent != null;
 +              DecompilerContext.setCurrentContext(null);
 +            }));
 +          }
@@ -769,7 +770,7 @@ index 7b0946ed0de6af2dbe2043332650a09880027726..7d44617f437ad6e78e204d56c394be5e
            }
          }
  
-@@ -164,6 +211,16 @@ public class ContextUnit {
+@@ -164,6 +212,16 @@ public class ContextUnit {
      }
    }
  
@@ -786,7 +787,7 @@ index 7b0946ed0de6af2dbe2043332650a09880027726..7d44617f437ad6e78e204d56c394be5e
    public void setManifest(Manifest manifest) {
      this.manifest = manifest;
    }
-@@ -175,4 +232,18 @@ public class ContextUnit {
+@@ -175,4 +233,18 @@ public class ContextUnit {
    public List<StructClass> getClasses() {
      return classes;
    }

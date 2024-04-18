@@ -1,0 +1,338 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: LexManos <LexManos@gmail.com>
+Date: Wed, 17 Apr 2024 13:17:14 -0700
+Subject: [PATCH] Make Statements.toString a bit more useful
+
+
+diff --git a/src/org/jetbrains/java/decompiler/code/Instruction.java b/src/org/jetbrains/java/decompiler/code/Instruction.java
+index 4a68757cab7facbda668293db47c07e0e76d95e5..ca52fa4db74fa84dc29258fa47e217ab9110aa0e 100644
+--- a/src/org/jetbrains/java/decompiler/code/Instruction.java
++++ b/src/org/jetbrains/java/decompiler/code/Instruction.java
+@@ -1,10 +1,14 @@
+ // Copyright 2000-2024 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
+ package org.jetbrains.java.decompiler.code;
+ 
++import org.jetbrains.java.decompiler.struct.consts.ConstantPool;
+ import org.jetbrains.java.decompiler.util.TextUtil;
+ 
+ public class Instruction {
+   public static Instruction create(int opcode, boolean wide, int group, int bytecodeVersion, int[] operands, int length) {
++	return create(opcode, wide, group, bytecodeVersion, operands, length, null);
++  }
++  public static Instruction create(int opcode, boolean wide, int group, int bytecodeVersion, int[] operands, int length, ConstantPool pool) {
+     if (opcode >= CodeConstants.opc_ifeq && opcode <= CodeConstants.opc_if_acmpne ||
+         opcode == CodeConstants.opc_ifnull || opcode == CodeConstants.opc_ifnonnull ||
+         opcode == CodeConstants.opc_jsr || opcode == CodeConstants.opc_jsr_w ||
+@@ -15,7 +19,7 @@ public class Instruction {
+       return new SwitchInstruction(opcode, group, wide, bytecodeVersion, operands, length);
+     }
+     else {
+-      return new Instruction(opcode, group, wide, bytecodeVersion, operands, length);
++      return new Instruction(opcode, group, wide, bytecodeVersion, operands, length, pool);
+     }
+   }
+ 
+@@ -34,14 +38,19 @@ public class Instruction {
+   public final int length;
+ 
+   protected final int[] operands;
++  private final ConstantPool pool;
+ 
+   public Instruction(int opcode, int group, boolean wide, int bytecodeVersion, int[] operands, int length) {
++	this(opcode, group, wide, bytecodeVersion, operands, length, null);
++  }
++  public Instruction(int opcode, int group, boolean wide, int bytecodeVersion, int[] operands, int length, ConstantPool pool) {
+     this.opcode = opcode;
+     this.group = group;
+     this.wide = wide;
+     this.bytecodeVersion = bytecodeVersion;
+     this.operands = operands;
+     this.length = length;
++    this.pool = pool;
+   }
+ 
+   public void initInstruction(InstructionSequence seq) { }
+@@ -75,6 +84,9 @@ public class Instruction {
+       }
+       else {
+         res.append(" ").append(Integer.toHexString(op));
++        if (pool != null && (this.group == CodeConstants.GROUP_INVOCATION || this.group == CodeConstants.GROUP_FIELDACCESS)) {
++          res.append(' ').append(pool.getConstant(op));
++        }
+       }
+     }
+ 
+diff --git a/src/org/jetbrains/java/decompiler/code/InstructionSequence.java b/src/org/jetbrains/java/decompiler/code/InstructionSequence.java
+index 3d0cab0d940aef9f20feb5acf2f1494d6d82ef46..315469ebcffd79ee52840e3450b5c84bbb318302 100644
+--- a/src/org/jetbrains/java/decompiler/code/InstructionSequence.java
++++ b/src/org/jetbrains/java/decompiler/code/InstructionSequence.java
+@@ -50,8 +50,9 @@ public abstract class InstructionSequence {
+   }
+ 
+   public void addSequence(InstructionSequence seq) {
++	int base = this.length() == 0 ? 0 : this.getOffset(this.length() - 1);
+     for (int i = 0; i < seq.length(); i++) {
+-      addInstruction(seq.getInstr(i), -1); // TODO: any sensible value possible?
++      addInstruction(seq.getInstr(i), base + seq.getOffset(i));
+     }
+   }
+ 
+diff --git a/src/org/jetbrains/java/decompiler/code/cfg/ControlFlowGraph.java b/src/org/jetbrains/java/decompiler/code/cfg/ControlFlowGraph.java
+index b5da80ecd55dbc9145025b5a43c936b9314da81b..0dd153581083d4e4dddf95051d168bce3e6fe8e5 100644
+--- a/src/org/jetbrains/java/decompiler/code/cfg/ControlFlowGraph.java
++++ b/src/org/jetbrains/java/decompiler/code/cfg/ControlFlowGraph.java
+@@ -195,6 +195,9 @@ public class ControlFlowGraph {
+     VBStyleCollection<BasicBlock, Integer> colBlocks = createBasicBlocks(states, instrseq, mapInstrBlocks);
+ 
+     blocks = colBlocks;
++    first = blocks.get(0);
++
++    last = new BasicBlock(++last_id);
+ 
+     connectBlocks(colBlocks, mapInstrBlocks);
+ 
+@@ -718,9 +721,9 @@ public class ControlFlowGraph {
+ 
+   private void setFirstAndLastBlocks() {
+ 
+-    first = blocks.get(0);
++    //first = blocks.get(0);
+ 
+-    last = new BasicBlock(++last_id);
++    //last = new BasicBlock(++last_id);
+ 
+     for (BasicBlock block : blocks) {
+       if (block.getSuccessors().isEmpty()) {
+diff --git a/src/org/jetbrains/java/decompiler/modules/decompiler/stats/BasicBlockStatement.java b/src/org/jetbrains/java/decompiler/modules/decompiler/stats/BasicBlockStatement.java
+index 98e1c189d302ac71e01949511dc9f9c035b85e5a..58b1ca39ac0fb77769afa7002d647758cf0ea4c8 100644
+--- a/src/org/jetbrains/java/decompiler/modules/decompiler/stats/BasicBlockStatement.java
++++ b/src/org/jetbrains/java/decompiler/modules/decompiler/stats/BasicBlockStatement.java
+@@ -10,6 +10,7 @@ import org.jetbrains.java.decompiler.main.collectors.BytecodeMappingTracer;
+ import org.jetbrains.java.decompiler.main.collectors.CounterContainer;
+ import org.jetbrains.java.decompiler.modules.decompiler.ExprProcessor;
+ import org.jetbrains.java.decompiler.util.TextBuffer;
++import org.jetbrains.java.decompiler.util.TextUtil;
+ import org.jetbrains.java.decompiler.util.StartEndPair;
+ 
+ public class BasicBlockStatement extends Statement {
+@@ -68,4 +69,9 @@ public class BasicBlockStatement extends Statement {
+       return new StartEndPair(0, 0);
+     }
+   }
++
++  @Override
++  protected String toString(int indent) {
++	return TextUtil.getIndentString(indent) + type + ": " + id + DecompilerContext.getNewLineSeparator() + block.getSeq().toString(indent + 1);
++  }
+ }
+diff --git a/src/org/jetbrains/java/decompiler/modules/decompiler/stats/Statement.java b/src/org/jetbrains/java/decompiler/modules/decompiler/stats/Statement.java
+index 2a98d7dba0f59faf96501ff84296bf165a0a6f1a..a55c318869fb04d247e18de790b36c3850e4b25d 100644
+--- a/src/org/jetbrains/java/decompiler/modules/decompiler/stats/Statement.java
++++ b/src/org/jetbrains/java/decompiler/modules/decompiler/stats/Statement.java
+@@ -21,6 +21,7 @@ import org.jetbrains.java.decompiler.struct.match.MatchNode;
+ import org.jetbrains.java.decompiler.struct.match.MatchNode.RuleValue;
+ import org.jetbrains.java.decompiler.util.StartEndPair;
+ import org.jetbrains.java.decompiler.util.TextBuffer;
++import org.jetbrains.java.decompiler.util.TextUtil;
+ import org.jetbrains.java.decompiler.util.VBStyleCollection;
+ 
+ import java.util.*;
+@@ -819,7 +820,17 @@ public abstract class Statement implements IMatchable {
+ 
+   // helper methods
+   public String toString() {
+-    return String.format("{%d}:%d", type, id);
++    return toString(0);
++  }
++
++  protected String toString(int indent) {
++	var buf = new StringBuilder();
++	buf.append(TextUtil.getIndentString(indent)).append(type).append(": ").append(id);
++	for (var stat : this.stats) {
++	  buf.append(DecompilerContext.getNewLineSeparator());
++	  buf.append(stat.toString(indent + 1));
++	}
++	return buf.toString();
+   }
+ 
+   //TODO: Cleanup/cache?
+diff --git a/src/org/jetbrains/java/decompiler/struct/StructMethod.java b/src/org/jetbrains/java/decompiler/struct/StructMethod.java
+index 08efdbaa173380dbbc0cd30c5ec5d43b0c2cf074..022422cc752e7b8c8c4bd00a70312fd6de0295bc 100644
+--- a/src/org/jetbrains/java/decompiler/struct/StructMethod.java
++++ b/src/org/jetbrains/java/decompiler/struct/StructMethod.java
+@@ -278,7 +278,7 @@ public class StructMethod extends StructMember {
+ 
+       i++;
+ 
+-      Instruction instr = Instruction.create(opcode, wide, group, bytecodeVersion, ops, i - offset);
++      Instruction instr = Instruction.create(opcode, wide, group, bytecodeVersion, ops, i - offset, pool);
+ 
+       instructions.addWithKey(instr, offset);
+     }
+diff --git a/src/org/jetbrains/java/decompiler/struct/consts/LinkConstant.java b/src/org/jetbrains/java/decompiler/struct/consts/LinkConstant.java
+index b46ba71e3af904ea9050a0f52bed555071560751..e959203e9b03c7d77a60687d8cb265345eeb9d14 100644
+--- a/src/org/jetbrains/java/decompiler/struct/consts/LinkConstant.java
++++ b/src/org/jetbrains/java/decompiler/struct/consts/LinkConstant.java
+@@ -74,4 +74,9 @@ public class LinkConstant extends PooledConstant {
+            this.descriptor.equals(cn.descriptor) &&
+            (this.type != CodeConstants.CONSTANT_NameAndType || this.className.equals(cn.className));
+   }
++
++  @Override
++  public String toString() {
++	return (className == null ? "" : className + '.') + elementName + descriptor;
++  }
+ }
+diff --git a/src/org/jetbrains/java/decompiler/struct/consts/PrimitiveConstant.java b/src/org/jetbrains/java/decompiler/struct/consts/PrimitiveConstant.java
+index ce0ba438fe53f5c7127f1e507d8bca00f985004e..9d0f737d25ec58b994e6791633c417a0d4da231a 100644
+--- a/src/org/jetbrains/java/decompiler/struct/consts/PrimitiveConstant.java
++++ b/src/org/jetbrains/java/decompiler/struct/consts/PrimitiveConstant.java
+@@ -49,4 +49,9 @@ public class PrimitiveConstant extends PooledConstant {
+            this.isArray == cn.isArray &&
+            this.value.equals(cn.value);
+   }
++
++  @Override
++  public String toString() {
++	return value.toString();
++  }
+ }
+diff --git a/src/org/jetbrains/java/decompiler/util/DotExporter.java b/src/org/jetbrains/java/decompiler/util/DotExporter.java
+index f9ce78507cb70255e090088fbf1e1834dfdf902f..ac7ab8de71c1f39cadf6d1f94c81c060ffff965d 100644
+--- a/src/org/jetbrains/java/decompiler/util/DotExporter.java
++++ b/src/org/jetbrains/java/decompiler/util/DotExporter.java
+@@ -3,15 +3,20 @@ package org.jetbrains.java.decompiler.util;
+ import java.io.BufferedOutputStream;
+ import java.io.File;
+ import java.io.FileOutputStream;
++import java.util.Collection;
+ import java.util.Collections;
+ import java.util.HashSet;
++import java.util.LinkedHashSet;
+ import java.util.List;
+ import java.util.Map;
+ import java.util.Set;
+ import java.util.Map.Entry;
+ 
++import org.jetbrains.java.decompiler.code.CodeConstants;
+ import org.jetbrains.java.decompiler.code.cfg.BasicBlock;
+ import org.jetbrains.java.decompiler.code.cfg.ControlFlowGraph;
++import org.jetbrains.java.decompiler.main.DecompilerContext;
++import org.jetbrains.java.decompiler.modules.decompiler.ExprProcessor;
+ import org.jetbrains.java.decompiler.modules.decompiler.StatEdge;
+ import org.jetbrains.java.decompiler.modules.decompiler.sforms.DirectGraph;
+ import org.jetbrains.java.decompiler.modules.decompiler.sforms.DirectNode;
+@@ -20,6 +25,8 @@ import org.jetbrains.java.decompiler.modules.decompiler.vars.VarVersionEdge;
+ import org.jetbrains.java.decompiler.modules.decompiler.vars.VarVersionNode;
+ import org.jetbrains.java.decompiler.modules.decompiler.vars.VarVersionsGraph;
+ import org.jetbrains.java.decompiler.struct.StructMethod;
++import org.jetbrains.java.decompiler.struct.gen.MethodDescriptor;
++import org.jetbrains.java.decompiler.struct.gen.VarType;
+ import org.jetbrains.java.decompiler.util.FastSparseSetFactory.FastSparseSet;
+ 
+ public class DotExporter {
+@@ -69,35 +76,25 @@ public class DotExporter {
+   private static String toDotFormat(ControlFlowGraph graph, boolean showMultipleEdges) {
+ 
+     StringBuffer buffer = new StringBuffer();
++    var nl = "\r\n";
+ 
+-    buffer.append("digraph G {\r\n");
++    buffer.append("digraph G {").append(nl);
+ 
+     List<BasicBlock> blocks = graph.getBlocks();
+     for(int i=0;i<blocks.size();i++) {
+       BasicBlock block = blocks.get(i);
+-
+-      buffer.append(block.id+" [shape=box,label=\""+block.id+"\"];\r\n");
++      buffer.append(block.id).append('[').append(nl)
++        .append("  shape=box").append(nl)
++        .append("  label=\"").append(block.toString().replaceAll(DecompilerContext.getNewLineSeparator(), "\\\\l")).append('"').append(nl)
++        .append(']').append(nl);
+ 
+ 
+-      List<BasicBlock> suc = block.getSuccessors();
+-      if(!showMultipleEdges) {
+-        HashSet<BasicBlock> set = new HashSet<>();
+-        set.addAll(suc);
+-        suc = Collections.list(Collections.enumeration(set));
++      for (var edge : unique(block.getSuccessors(), showMultipleEdges)) {
++    	buffer.append(block.id).append(" -> ").append(edge.id).append(';').append(nl);
+       }
+-      for(int j=0;j<suc.size();j++) {
+-        buffer.append(block.id+"->"+suc.get(j).id+";\r\n");
+-      }
+-
+ 
+-      suc = block.getSuccessorExceptions();
+-      if(!showMultipleEdges) {
+-        HashSet<BasicBlock> set = new HashSet<>();
+-        set.addAll(suc);
+-        suc = Collections.list(Collections.enumeration(set));
+-      }
+-      for(int j=0;j<suc.size();j++) {
+-        buffer.append(block.id+" -> "+suc.get(j).id+" [style=dotted];\r\n");
++      for (var edge : unique(block.getSuccessorExceptions(), showMultipleEdges)) {
++    	buffer.append(block.id).append(" -> ").append(edge.id).append(" [style=dotted];").append(nl);
+       }
+     }
+ 
+@@ -106,6 +103,14 @@ public class DotExporter {
+     return buffer.toString();
+   }
+ 
++  private static Collection<BasicBlock> unique(List<BasicBlock> blocks, boolean showMultipleEdges) {
++	if (showMultipleEdges)
++      return blocks;
++	var set = new LinkedHashSet<BasicBlock>();
++	set.addAll(blocks);
++	return set;
++  }
++
+   private static String toDotFormat(VarVersionsGraph graph) {
+ 
+     StringBuffer buffer = new StringBuffer();
+@@ -135,10 +140,7 @@ public class DotExporter {
+ 
+     buffer.append("digraph G {\r\n");
+ 
+-    List<DirectNode> blocks = graph.nodes;
+-    for(int i=0;i<blocks.size();i++) {
+-      DirectNode block = blocks.get(i);
+-
++    for(var block : graph.nodes) {
+       StringBuilder label = new StringBuilder(block.id);
+       if (vars != null && vars.containsKey(block.id)) {
+         SFormsFastMapDirect map = vars.get(block.id);
+@@ -179,15 +181,27 @@ public class DotExporter {
+     File root = new File(DOTS_FOLDER + mt.getClassQualifiedName());
+     if (!root.isDirectory())
+       root.mkdirs();
+-    return new File(root,
+-      mt.getName().replace('<', '.').replace('>', '_') +
+-      mt.getDescriptor().replace('/', '.') +
+-      '_' + suffix + ".dot");
++    var name = new StringBuilder();
++    name.append(mt.getName().replace('<', '_').replace('>', '_'));
++    name.append('(');
++    var desc = MethodDescriptor.parseDescriptor(mt.getDescriptor());
++    for (var par : desc.params) {
++      name.append(ExprProcessor.getCastTypeName(par, Collections.emptyList())).append(", ");
++    }
++    if (desc.params.length > 0) {
++      name.delete(name.length() - 2, name.length());
++    }
++    name.append(')');
++    name.append(ExprProcessor.getCastTypeName(desc.ret, Collections.emptyList()));
++    name.append('_').append(suffix).append(".dot");
++
++    return new File(root, name.toString());
+   }
+ 
+   public static void toDotFile(DirectGraph dgraph, StructMethod mt, String suffix) {
+     toDotFile(dgraph, mt, suffix, null);
+   }
++
+   public static void toDotFile(DirectGraph dgraph, StructMethod mt, String suffix, Map<String, SFormsFastMapDirect> vars) {
+     if (!DUMP_DOTS)
+       return;

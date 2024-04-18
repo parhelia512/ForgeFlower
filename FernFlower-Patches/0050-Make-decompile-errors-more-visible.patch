@@ -1,0 +1,445 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: LexManos <LexManos@gmail.com>
+Date: Tue, 16 Apr 2024 19:45:04 -0700
+Subject: [PATCH] Make decompile errors more visible
+
+
+diff --git a/src/org/jetbrains/java/decompiler/main/ClassWriter.java b/src/org/jetbrains/java/decompiler/main/ClassWriter.java
+index 9baea1fc3744535c38f3cc5a6ec51551766767b5..59b0dfda877aa5ff0eaf7ce171ece495e0b8223d 100644
+--- a/src/org/jetbrains/java/decompiler/main/ClassWriter.java
++++ b/src/org/jetbrains/java/decompiler/main/ClassWriter.java
+@@ -182,9 +182,8 @@ public class ClassWriter {
+                   buffer.append(codeBuffer);
+                 }
+                 catch (Throwable ex) {
+-                  DecompilerContext.getLogger().writeMessage("Method " + mt.getName() + " " + mt.getDescriptor() + " couldn't be written.",
+-                    IFernflowerLogger.Severity.WARN,
+-                    ex);
++                  String message = "Method " + mt.getName() + " " + mt.getDescriptor() + " in class " + cl.qualifiedName + " couldn't be written.";
++                  DecompilerContext.getLogger().logError(message, ex);
+                   methodWrapper.decompiledWithErrors = true;
+                   buffer.append(" // $FF: Couldn't be decompiled");
+                 }
+@@ -940,7 +939,7 @@ public class ClassWriter {
+           }
+           catch (Throwable t) {
+             String message = "Method " + mt.getName() + " " + mt.getDescriptor() + " in class " + node.classStruct.qualifiedName + " couldn't be written.";
+-            DecompilerContext.getLogger().writeMessage(message, IFernflowerLogger.Severity.WARN, t);
++            DecompilerContext.getLogger().logError(message, t);
+             methodWrapper.decompiledWithErrors = true;
+           }
+         }
+@@ -1067,8 +1066,8 @@ public class ClassWriter {
+             buffer.append(root.toJava(indent, tracer));
+           }
+           catch (Throwable t) {
+-            String message = "Method " + mt.getName() + " " + mt.getDescriptor() + " couldn't be written.";
+-            DecompilerContext.getLogger().writeMessage(message, IFernflowerLogger.Severity.WARN, t);
++            String message = "Method " + mt.getName() + " " + mt.getDescriptor() + " in class " + classWrapper.getClassStruct().qualifiedName + " couldn't be written.";
++            DecompilerContext.getLogger().logError(message, t);
+             methodWrapper.decompiledWithErrors = true;
+           }
+         }
+diff --git a/src/org/jetbrains/java/decompiler/main/Fernflower.java b/src/org/jetbrains/java/decompiler/main/Fernflower.java
+index 7ffebec559f9349a346368e31e16828c35f09958..f52f5c730b2fe3a80e4c747101f58ee0e1f6ed8d 100644
+--- a/src/org/jetbrains/java/decompiler/main/Fernflower.java
++++ b/src/org/jetbrains/java/decompiler/main/Fernflower.java
+@@ -178,7 +178,7 @@ public class Fernflower implements IDecompiledData {
+       classProcessor.processClass(cl);
+       return true;
+     } catch (Throwable t) {
+-      DecompilerContext.getLogger().writeMessage("Class " + cl.qualifiedName + " couldn't be processed.", t);
++      DecompilerContext.getLogger().logError("Class " + cl.qualifiedName + " couldn't be processed.", t);
+       return false;
+     }
+   }
+@@ -198,7 +198,7 @@ public class Fernflower implements IDecompiledData {
+       throw e;
+     }
+     catch (Throwable t) {
+-      DecompilerContext.getLogger().writeMessage("Class " + cl.qualifiedName + " couldn't be fully decompiled.", t);
++      DecompilerContext.getLogger().logError("Class " + cl.qualifiedName + " couldn't be fully decompiled.", t);
+       return null;
+     }
+   }
+diff --git a/src/org/jetbrains/java/decompiler/main/decompiler/PrintStreamLogger.java b/src/org/jetbrains/java/decompiler/main/decompiler/PrintStreamLogger.java
+index 4398128ff456563af17a51479e563bb90f5badcb..9baa93794599655946f2147d0edf2b247c058a7f 100644
+--- a/src/org/jetbrains/java/decompiler/main/decompiler/PrintStreamLogger.java
++++ b/src/org/jetbrains/java/decompiler/main/decompiler/PrintStreamLogger.java
+@@ -1,15 +1,22 @@
+ // Copyright 2000-2018 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
+ package org.jetbrains.java.decompiler.main.decompiler;
+ 
++import org.jetbrains.java.decompiler.main.DecompilerContext;
+ import org.jetbrains.java.decompiler.main.extern.IFernflowerLogger;
++import org.jetbrains.java.decompiler.main.extern.IFernflowerPreferences;
+ import org.jetbrains.java.decompiler.util.TextUtil;
+ 
+ import java.io.PrintStream;
++import java.io.PrintWriter;
++import java.io.StringWriter;
++import java.util.ArrayList;
++import java.util.List;
+ 
+ public class PrintStreamLogger extends IFernflowerLogger {
+ 
+-  private final PrintStream stream;
++  protected final PrintStream stream;
+   private int indent;
++  private final List<String> errors = new ArrayList<>();
+ 
+   public PrintStreamLogger(PrintStream printStream) {
+     stream = printStream;
+@@ -19,15 +26,27 @@ public class PrintStreamLogger extends IFernflowerLogger {
+   @Override
+   public void writeMessage(String message, Severity severity) {
+     if (accepts(severity)) {
+-      stream.println(severity.prefix + TextUtil.getIndentString(indent) + message);
++      writeMessage(message, severity, null);
+     }
+   }
+ 
+   @Override
+   public void writeMessage(String message, Severity severity, Throwable t) {
+     if (accepts(severity)) {
+-      writeMessage(message, severity);
+-      t.printStackTrace(stream);
++      String prefix = prefix() + severity.prefix + TextUtil.getIndentString(indent());
++      StringBuilder buf = new StringBuilder();
++      buf.append(prefix).append(message);
++
++      if (t != null) {
++        String indentStr = (String)DecompilerContext.getProperty(IFernflowerPreferences.INDENT_STRING);
++        var sw = new StringWriter();
++        t.printStackTrace(new PrintWriter(sw));
++        for (var line : sw.toString().split(System.lineSeparator())) {
++          buf.append(System.lineSeparator()).append(prefix).append(indentStr).append(line);
++        }
++      }
++
++      stream.println(buf.toString());
+     }
+   }
+ 
+@@ -35,14 +54,14 @@ public class PrintStreamLogger extends IFernflowerLogger {
+   public void startProcessingClass(String className) {
+     if (accepts(Severity.INFO)) {
+       writeMessage("PreProcessing class " + className, Severity.INFO);
+-      ++indent;
++      push();
+     }
+   }
+ 
+   @Override
+   public void endProcessingClass() {
+     if (accepts(Severity.INFO)) {
+-      --indent;
++      pop();
+       writeMessage("... done", Severity.INFO);
+     }
+   }
+@@ -51,14 +70,14 @@ public class PrintStreamLogger extends IFernflowerLogger {
+   public void startReadingClass(String className) {
+     if (accepts(Severity.INFO)) {
+       writeMessage("Decompiling class " + className, Severity.INFO);
+-      ++indent;
++      push();
+     }
+   }
+ 
+   @Override
+   public void endReadingClass() {
+     if (accepts(Severity.INFO)) {
+-      --indent;
++      pop();
+       writeMessage("... done", Severity.INFO);
+     }
+   }
+@@ -67,14 +86,14 @@ public class PrintStreamLogger extends IFernflowerLogger {
+   public void startClass(String className) {
+     if (accepts(Severity.INFO)) {
+       writeMessage("Processing class " + className, Severity.TRACE);
+-      ++indent;
++      push();
+     }
+   }
+ 
+   @Override
+   public void endClass() {
+     if (accepts(Severity.INFO)) {
+-      --indent;
++      pop();
+       writeMessage("... proceeded", Severity.TRACE);
+     }
+   }
+@@ -83,14 +102,14 @@ public class PrintStreamLogger extends IFernflowerLogger {
+   public void startMethod(String methodName) {
+     if (accepts(Severity.INFO)) {
+       writeMessage("Processing method " + methodName, Severity.TRACE);
+-      ++indent;
++      push();
+     }
+   }
+ 
+   @Override
+   public void endMethod() {
+     if (accepts(Severity.INFO)) {
+-      --indent;
++      pop();
+       writeMessage("... proceeded", Severity.TRACE);
+     }
+   }
+@@ -99,15 +118,44 @@ public class PrintStreamLogger extends IFernflowerLogger {
+   public void startWriteClass(String className) {
+     if (accepts(Severity.INFO)) {
+       writeMessage("Writing class " + className, Severity.TRACE);
+-      ++indent;
++      push();
+     }
+   }
+ 
+   @Override
+   public void endWriteClass() {
+     if (accepts(Severity.INFO)) {
+-      --indent;
++      pop();
+       writeMessage("... written", Severity.TRACE);
+     }
+   }
++
++  protected void push() {
++    indent++;
++  }
++
++  protected void pop() {
++    indent--;
++  }
++
++  protected int indent() {
++    return indent;
++  }
++
++  protected String prefix() {
++    return "";
++  }
++
++  @Override
++  public synchronized void logError(String message, Throwable t) {
++    writeMessage(message, Severity.ERROR, t);
++    var sw = new StringWriter();
++    t.printStackTrace(new PrintWriter(sw));
++    errors.add(message + System.lineSeparator() + sw.toString());
++  }
++
++  @Override
++  public List<String> getErrors() {
++    return errors;
++  }
+ }
+diff --git a/src/org/jetbrains/java/decompiler/main/decompiler/ThreadedPrintStreamLogger.java b/src/org/jetbrains/java/decompiler/main/decompiler/ThreadedPrintStreamLogger.java
+index fe8608901ab47ede002a24b3ad2199150bc8bbf0..a4e70bddeb412086881afdcb64ad8fae84743763 100644
+--- a/src/org/jetbrains/java/decompiler/main/decompiler/ThreadedPrintStreamLogger.java
++++ b/src/org/jetbrains/java/decompiler/main/decompiler/ThreadedPrintStreamLogger.java
+@@ -1,114 +1,34 @@
+ // Copyright 2000-2020 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
+ package org.jetbrains.java.decompiler.main.decompiler;
+ 
+-import org.jetbrains.java.decompiler.main.extern.IFernflowerLogger;
+-import org.jetbrains.java.decompiler.util.TextUtil;
+-
+ import java.io.PrintStream;
+ import java.util.concurrent.atomic.AtomicInteger;
+ 
+-public class ThreadedPrintStreamLogger extends IFernflowerLogger {
++public class ThreadedPrintStreamLogger extends PrintStreamLogger {
+ 
+-  private final PrintStream stream;
+   private final ThreadLocal<AtomicInteger> indent = ThreadLocal.withInitial(AtomicInteger::new);
+ 
+   public ThreadedPrintStreamLogger(PrintStream printStream) {
+-    stream = printStream;
+-  }
+-
+-  @Override
+-  public void writeMessage(String message, Severity severity) {
+-    if (accepts(severity)) {
+-      Thread th = Thread.currentThread();
+-      stream.println(th.getName() + ": " + severity.prefix + TextUtil.getIndentString(indent.get().get()) + message);
+-    }
+-  }
+-
+-  @Override
+-  public void writeMessage(String message, Severity severity, Throwable t) {
+-    if (accepts(severity)) {
+-      writeMessage(message, severity);
+-      t.printStackTrace(stream);
+-    }
+-  }
+-
+-  @Override
+-  public void startProcessingClass(String className) {
+-    if (accepts(Severity.INFO)) {
+-      writeMessage("PreProcessing class " + className, Severity.INFO);
+-      indent.get().incrementAndGet();
+-    }
+-  }
+-
+-  @Override
+-  public void endProcessingClass() {
+-    if (accepts(Severity.INFO)) {
+-      indent.get().decrementAndGet();
+-      writeMessage("... done", Severity.INFO);
+-    }
+-  }
+-
+-  @Override
+-  public void startReadingClass(String className) {
+-    if (accepts(Severity.INFO)) {
+-      writeMessage("Decompiling class " + className, Severity.INFO);
+-      indent.get().incrementAndGet();
+-    }
+-  }
+-
+-  @Override
+-  public void endReadingClass() {
+-    if (accepts(Severity.INFO)) {
+-      indent.get().decrementAndGet();
+-      writeMessage("... done", Severity.INFO);
+-    }
+-  }
+-
+-  @Override
+-  public void startClass(String className) {
+-    if (accepts(Severity.INFO)) {
+-      writeMessage("Processing class " + className, Severity.TRACE);
+-      indent.get().decrementAndGet();
+-    }
+-  }
+-
+-  @Override
+-  public void endClass() {
+-    if (accepts(Severity.INFO)) {
+-      indent.get().decrementAndGet();
+-      writeMessage("... proceeded", Severity.TRACE);
+-    }
++    super(printStream);
+   }
+ 
+   @Override
+-  public void startMethod(String methodName) {
+-    if (accepts(Severity.INFO)) {
+-      writeMessage("Processing method " + methodName, Severity.TRACE);
+-      indent.get().decrementAndGet();
+-    }
++  protected void push() {
++    indent.get().incrementAndGet();
+   }
+ 
+   @Override
+-  public void endMethod() {
+-    if (accepts(Severity.INFO)) {
+-      indent.get().decrementAndGet();
+-      writeMessage("... proceeded", Severity.TRACE);
+-    }
++  protected void pop() {
++    indent.get().decrementAndGet();
+   }
+ 
+   @Override
+-  public void startWriteClass(String className) {
+-    if (accepts(Severity.INFO)) {
+-      writeMessage("Writing class " + className, Severity.TRACE);
+-      indent.get().decrementAndGet();
+-    }
++  protected int indent() {
++    return indent.get().get();
+   }
+ 
+   @Override
+-  public void endWriteClass() {
+-    if (accepts(Severity.INFO)) {
+-      indent.get().decrementAndGet();
+-      writeMessage("... written", Severity.TRACE);
+-    }
++  protected String prefix() {
++    return Thread.currentThread().getName() + ": ";
+   }
+ }
+diff --git a/src/org/jetbrains/java/decompiler/main/extern/IFernflowerLogger.java b/src/org/jetbrains/java/decompiler/main/extern/IFernflowerLogger.java
+index 3ca43800b47e1d26a1dc036f21cb6e6e83ed5138..50cef3a2a4b4c394c8cf2d8e48a9db8c5798cf8d 100644
+--- a/src/org/jetbrains/java/decompiler/main/extern/IFernflowerLogger.java
++++ b/src/org/jetbrains/java/decompiler/main/extern/IFernflowerLogger.java
+@@ -1,6 +1,9 @@
+ // Copyright 2000-2017 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
+ package org.jetbrains.java.decompiler.main.extern;
+ 
++import java.util.Collections;
++import java.util.List;
++
+ public abstract class IFernflowerLogger {
+ 
+   public enum Severity {
+@@ -50,4 +53,10 @@ public abstract class IFernflowerLogger {
+   public void startWriteClass(String className) { }
+ 
+   public void endWriteClass() { }
++
++  public void logError(String message, Throwable t) {
++    writeMessage(message, Severity.ERROR, t);
++  }
++
++  public List<String> getErrors() { return Collections.emptyList(); }
+ }
+diff --git a/src/org/jetbrains/java/decompiler/main/rels/ClassWrapper.java b/src/org/jetbrains/java/decompiler/main/rels/ClassWrapper.java
+index 4bf036a062bf94937e97a8970010feb6365f8c8f..694b6852d068ac40bcd923dc64193b4be92368b7 100644
+--- a/src/org/jetbrains/java/decompiler/main/rels/ClassWrapper.java
++++ b/src/org/jetbrains/java/decompiler/main/rels/ClassWrapper.java
+@@ -103,7 +103,7 @@ public class ClassWrapper {
+       }
+       catch (Throwable t) {
+         String message = "Method " + mt.getName() + " " + mt.getDescriptor() + " in class " + classStruct.qualifiedName + " couldn't be decompiled.";
+-        DecompilerContext.getLogger().writeMessage(message, IFernflowerLogger.Severity.WARN, t);
++        DecompilerContext.getLogger().logError(message, t);
+         isError = true;
+       }
+ 
+diff --git a/src/org/jetbrains/java/decompiler/struct/ContextUnit.java b/src/org/jetbrains/java/decompiler/struct/ContextUnit.java
+index 875ba77596a678d7d76b6422e761840773b5d85b..2f5582a39ef2254633d1d8f85f96007e6810bbfa 100644
+--- a/src/org/jetbrains/java/decompiler/struct/ContextUnit.java
++++ b/src/org/jetbrains/java/decompiler/struct/ContextUnit.java
+@@ -2,6 +2,7 @@
+ package org.jetbrains.java.decompiler.struct;
+ 
+ import org.jetbrains.java.decompiler.main.DecompilerContext;
++import org.jetbrains.java.decompiler.main.extern.IFernflowerLogger.Severity;
+ import org.jetbrains.java.decompiler.main.extern.IFernflowerPreferences;
+ import org.jetbrains.java.decompiler.main.extern.IResultSaver;
+ import org.jetbrains.java.decompiler.struct.lazy.LazyLoader;
+@@ -13,6 +14,7 @@ import java.io.File;
+ import java.io.IOException;
+ import java.nio.charset.StandardCharsets;
+ import java.util.ArrayList;
++import java.util.Collections;
+ import java.util.List;
+ import java.util.concurrent.ExecutionException;
+ import java.util.concurrent.ExecutorService;
+@@ -210,7 +212,19 @@ public class ContextUnit {
+           }
+         }
+ 
++        var errors = DecompilerContext.getLogger().getErrors();
++        if (!errors.isEmpty()) {
++          StringBuilder buf = new StringBuilder();
++          Collections.sort(errors);
++          errors.forEach(buf::append);
++          DecompilerContext.getLogger().writeMessage(buf.toString(), Severity.ERROR);
++          resultSaver.saveClassEntry(archivePath, filename, "fernflower_errors.txt", "fernflower_errors.txt", buf.toString(), null);
++        }
++
+         resultSaver.closeArchive(archivePath, filename);
++
++        if (!errors.isEmpty())
++          throw new IllegalStateException("Errors during decompile");
+       }
+     }
+   }
